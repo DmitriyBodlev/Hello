@@ -1,0 +1,6 @@
+.next/*
+.vscode/*
+cfn/*
+node_modules/*
+out/*
+static/*

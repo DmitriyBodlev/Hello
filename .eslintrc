@@ -1,0 +1,29 @@
+{
+  "parser": "babel-eslint",
+  "extends": "standard",
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "plugins": [
+    "compat"
+  ],
+  "globals": {},
+  "rules": {
+    "compat/compat": "warn",
+    "jsx-a11y/alt-text": "warn",
+    "no-dupe-class-members": "warn",
+    "no-mixed-operators": "warn",
+    "no-redeclare": "error",
+    "no-param-reassign": "warn",
+    "import/no-webpack-loader-syntax": "off",
+    "jsx-a11y/anchor-is-valid": [
+      "off",
+      {
+        "aspects": [
+          "invalidHref"
+        ]
+      }
+    ]
+  }
+}
