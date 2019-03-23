@@ -4,7 +4,6 @@ module.exports = optimizedImages({
   exportPathMap: function () {
     return {
       '/': { page: '/' },
-      target: 'serverless',
     }
   }
 })
