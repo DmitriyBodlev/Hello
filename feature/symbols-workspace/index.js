@@ -2,6 +2,7 @@ import * as R from 'ramda';
 import { pure } from 'recompose';
 // components
 import InputComponent from '../../components/input-symbol';
+import DrawBox from '../../components/drow-box/index';
 // helpers
 import * as H from '../../helpers';
 // ui
@@ -248,6 +249,7 @@ export const Sections = (props) => {
     >
       <Box mr='10px' width='250px' height='200px' borderRight='1px solid lightgray'>
         {/* Drow Component */}
+        <DrawBox />
       </Box>
       <Flex
         width='100%'

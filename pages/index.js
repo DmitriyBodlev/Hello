@@ -194,24 +194,24 @@ const enhance = compose(
     // NOTE: must be here for a while
     componentWillMount () {
       // debugger;
-      let imagesRef = this.props.db
-        .ref('images')
-        .orderByKey()
+      // let imagesRef = this.props.db
+      //   .ref('images')
+      //   .orderByKey()
 
-        .limitToLast(100);
-      imagesRef
-        .once('value')
-        .then(snapshot => {
-          const images = R.mapObjIndexed(
-            (value, key) => R.assoc('id', key, value),
-            snapshot.val() || []
-          );
-          localStorage.setItem('data', JSON.stringify(images));
-          this.props.setData(images);
-        })
-        .catch(error => console.log(error))
-        .then(() => {
-        });
+      //   .limitToLast(100);
+      // imagesRef
+      //   .once('value')
+      //   .then(snapshot => {
+      //     const images = R.mapObjIndexed(
+      //       (value, key) => R.assoc('id', key, value),
+      //       snapshot.val() || []
+      //     );
+      //     localStorage.setItem('data', JSON.stringify(images));
+      //     this.props.setData(images);
+      //   })
+      //   .catch(error => console.log(error))
+      //   .then(() => {
+      //   });
     },
     componentDidMount () {
       const images = JSON.parse(localStorage.getItem('data'));
