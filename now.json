@@ -1,4 +1,7 @@
 {
   "version": 2,
+  "routes": [
+    { "src": "/_next/static/(?:[^/]+/pages|chunks|runtime)/.+", "headers": { "cache-control": "immutable" } }
+  ],
   "name": "my-nextjs-app"
 }
