@@ -1,7 +1,8 @@
 {
-  "version": 2,
+  "version": 1,
   "public": true,
-  "name": "my-nextjs-app2",
+  "name": "my-nextjs-app",
+  "builds": [{ "src": "next.config.js", "use": "@now/next" }],
   "routes": [
     { "src": "/custom-page", "dest": "/index.html" },
     { "src": "/.*", "dest": "https://my-old-site.com"},
