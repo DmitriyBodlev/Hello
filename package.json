@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "next",
     "start": "next start",
+    "now-build": "next build",
     "build": "next build && next export",
     "lint": "standard 'bin/*' 'components/**/*.js' 'lib/**/*.js' 'pages/**/*.js'",
     "lint-fix": "standard --fix 'bin/*' 'components/**/*.js' 'lib/**/*.js' 'pages/**/*.js'",
