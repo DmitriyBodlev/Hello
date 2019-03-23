@@ -8,6 +8,7 @@
     { "src": "*.js", "use": "@now/node" },
   ],
   "routes": [
-    { "src": "/_next/static/(?:[^/]+/pages|chunks|runtime)/.+", "headers": { "cache-control": "immutable" } }
-  ],
+    { "src": "/custom-page", "dest": "/index.html" },
+    { "src": "/.*", "dest": "https://my-old-site.com"},
+  ]
 }
