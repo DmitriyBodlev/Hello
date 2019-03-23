@@ -1,5 +1,5 @@
 import * as R from 'ramda';
-import styled from 'styled-components';
+import styled, { css, createGlobalStyle } from 'styled-components';
 import {
   top,
   left,
@@ -28,6 +28,7 @@ import {
   textAlign,
   boxShadow,
   borderTop,
+  fontFamily,
   background,
   alignItems,
   lineHeight,
@@ -45,6 +46,45 @@ import {
 import * as H from '../helpers';
 // //////////////////////////////////////////////////////////////////////////////
 
+export const GlobalStyle = createGlobalStyle`
+  body, ul, button {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+  }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+  }
+  h1, h2, h3, h4, h5, h6, p {
+    margin: 0;
+    font-weight: 400;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  * :active, :hover, :focus {
+    outline: 0;
+    outline-offset: 0;
+  }
+  *::-webkit-scrollbar-track
+  {
+    background-color: transparent;
+  }
+
+  *::-webkit-scrollbar
+  {
+    width: 8px;
+    height: 8px;
+  }
+
+  *::-webkit-scrollbar-thumb
+  {
+    background-color: lightblue;
+  }
+`
+
 export const createMinWithMediaQuery = n => `
   @media screen and (min-width: ${n}px)
 `;
@@ -52,6 +92,13 @@ export const createMinWithMediaQuery = n => `
 export const createMaxWithMediaQuery = n => `
   @media screen and (max-width: ${n}px)
 `;
+
+export const hoverStyles = css`
+  &:hover {
+    color: ${({ hoverColor }) => hoverColor};
+    background-color: ${({ hoverBg }) => hoverBg};
+  }
+`
 
 export const Box = styled.div`
   ${flex}
@@ -68,7 +115,6 @@ export const Box = styled.div`
   ${display}
   ${fontSize}
   ${overflow}
-  ${position}
   ${maxWidth}
   ${minWidth}
   ${textAlign}
@@ -76,20 +122,19 @@ export const Box = styled.div`
   ${minHeight}
   ${boxShadow}
   ${borderTop}
+  ${fontFamily}
+  ${lineHeight}
   ${borderLeft}
   ${borderRight}
   ${borderColor}
   ${borderBottom}
   ${borderRadius}
   transform: ${({ transform }) => transform};
-`;
-
-export const PositionedBox = styled(Box)`
-  ${top}
-  ${left}
-  ${right}
-  ${bottom}
-  ${position}
+  transition: ${({ transition }) => transition};
+  border-style: ${({ borderStyle }) => borderStyle};
+  text-transform: ${({ textTransform }) => textTransform};
+  cursor: ${({ cursor }) => R.or(cursor, 'initial')};
+  ${({ additionalStyles }) => additionalStyles};
 `;
 
 export const Flex = styled(Box)`
@@ -100,9 +145,12 @@ export const Flex = styled(Box)`
   display: ${({ inline }) => H.ifElse(inline, 'inline-flex', 'flex')};
 `;
 
-export const StyledObject = styled.object`
-  ${width}
-  ${height} 
+export const PositionedBox = styled(Box)`
+  ${top}
+  ${left}
+  ${right}
+  ${bottom}
+  ${position}
 `;
 
 export const PositionedFlex = styled(Flex)`
@@ -138,48 +186,10 @@ export const Button = styled.button`
   ${opacity}
   ${fontSize}
   ${boxShadow}
+  ${fontWeight}
   ${borderColor}
   ${borderRadius}
   cursor: ${({ cursor }) => R.or(cursor, 'initial')};
-`;
-
-export const LinkButton = styled.a`
-  ${color}
-  ${space}
-  ${width}
-  ${height}
-  ${border}
-  ${zIndex}
-  ${opacity}
-  ${display}
-  ${fontSize}
-  ${position}
-  ${boxShadow}
-  ${alignItems}
-  ${borderColor}
-  ${borderRadius}
-  ${justifyContent}
-  cursor: ${({ cursor }) => R.or(cursor, 'initial')};
-`;
-
-/* NOTE: don't remove 'position' from start for work animation */
-export const LinkButtonAnimated = styled(LinkButton)`
-  position: relative;
-  &::before {
-    top: 0;
-    left: 0;
-    width: 0;
-    content: '';
-    height: 100%;
-    position: absolute;
-    transition: width 0.2s;
-    background-color: rgba(255,255,255,0.5);
-  }
-  &:hover {
-    &::before {
-      width: 100%;
-    }
-  }
 `;
 
 export const Image = styled.img`
@@ -187,8 +197,6 @@ export const Image = styled.img`
   ${width}
   ${height}
 `;
-
-
 
 export const ImagesContent = styled(Box)`
   justify-items: center;
@@ -208,39 +216,19 @@ export const Header = styled.header`
   ${background}
 `;
 
-export const IconWrapper = styled(Box)`
-  cursor: pointer;
-`;
-
-export const DropzoneWrapper = styled(Box)`
-  border-style: ${({ withLogo }) => R.equals(withLogo, true) ? 'solid' : 'dashed'};
-  & .dropzone {
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: transparent;
-    position: absolute !important;
-    & > p {
-      display: ${({ withLogo }) => R.equals(withLogo, true) ? 'none' : 'block'};
-    }
-  }
-`;
-
 export const Label = styled.label`
   ${space}
   ${width}
   ${color}
   ${display}
   ${fontSize}
+  ${alignItems}
   &.required::after {
     content: '*';
     color: red;
   }
 `;
+
 export const Input = styled.input`
   ${space}
   ${width}
@@ -255,7 +243,7 @@ export const Input = styled.input`
   }
 `;
 
-export const SelectWrapper = styled(Box)`
+export const SelectWrapper = styled(PositionedBox)`
   &:after {
     top: 24px;
     width: 6px;
@@ -285,4 +273,3 @@ export const SelectComponent = styled.select`
     box-shadow: 0 0 5px 0 rgba(206, 40, 40, 0.5);
   }
 `;
-

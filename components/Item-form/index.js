@@ -1,73 +1,72 @@
 
-import React, { useState } from "react";
-import * as R from "ramda";
-import Dropzone from 'react-dropzone';
+import * as R from 'ramda';
+import React, { useState } from 'react';
+// helpers
+import * as H from '../../helpers';
 // ui
-import { Box } from '../../ui';
-// feature image
 import {
+  Box,
   Label,
   Input,
   Header,
   Button,
   SelectWrapper,
-  DropzoneWrapper,
   SelectComponent } from '../../ui';
-///////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////
 
-export const renderImageWrapper = (image) => (
-  R.and(
-    R.not(R.isNil(image)),
-    <Box
-      width='100%'
-      height='100%'
-      display='flex'
-      overflow='hidden'
-      alignItems='center'
-      justifyContent='center'
-      boxShadow='5px 5px 21px 1px rgba(0, 0, 0, 0.6)'
-    >
-      <object style={{ height: '100%', fill: 'red' }} data={image}>
-          <span>Your browser doesn't support SVG images</span>
-      </object>
+export const ImageWrapper = ({ image }) => {
+  if (H.isNotNilAndNotEmpty(image)) {
+    return (
       <Box
         width='100%'
         height='100%'
-        backgroundSize='cover'
-        backgroundRepeat='no-repeat'
-        backgroundPosition='center center'
-        backgroundImage={`url(${image})`} />
-    </Box>,
-  )
-);
-
+        display='flex'
+        overflow='hidden'
+        alignItems='center'
+        justifyContent='center'
+        boxShadow='5px 5px 21px 1px rgba(0, 0, 0, 0.6)'
+      >
+        <object style={{ height: '100%' }} data={image}>
+          <span>Your browser doesn't support SVG images</span>
+        </object>
+        <Box
+          width='100%'
+          height='100%'
+          backgroundSize='cover'
+          backgroundRepeat='no-repeat'
+          backgroundPosition='center center'
+          backgroundImage={`url(${image})`} />
+      </Box>
+    );
+  }
+  return null;
+};
 
 const handleSetImage = (event, imageState, setImageState) => {
   event.preventDefault();
-  const some = event.nativeEvent.dataTransfer.getData("Url");
+  const some = event.nativeEvent.dataTransfer.getData('Url');
   const imageFile = event.nativeEvent.dataTransfer.files[0];
-  // console.log('some', some, event.nativeEvent.dataTransfer)
-  // debugger;
   const imageType = /image.*/;
-  if (!imageFile) return;
+  if (R.not(imageFile)) return;
   if (imageFile.type.match(imageType)) {
     const reader = new window.FileReader();
     reader.onload = () => {
       return (
-      setImageState({
-        ...imageState,
-        icon: reader.result,
-        fileName: imageFile.name,
-        withImageUpdate: true,
-        imageFile,
-      })
-    )};
+        setImageState({
+          ...imageState,
+          icon: reader.result,
+          fileName: imageFile.name,
+          withImageUpdate: true,
+          imageFile,
+        })
+      )
+    };
     reader.readAsDataURL(imageFile);
   }
 };
 
-export const renderDropzoneWrapper = (imageState, setImageState) => (
-  <DropzoneWrapper
+export const Dropzone = (props) => (
+  <Box
     width='250px'
     m='15px auto'
     height='400px'
@@ -78,19 +77,15 @@ export const renderDropzoneWrapper = (imageState, setImageState) => (
     background='#dcd0e2'
     justifyContent='center'
     border='1px dashed #b1b1b1'
+    onDrop={(e) => handleSetImage(e, props.imageState, props.setImageState)}
+    borderStyle={H.isNilOrEmpty(R.prop('icon', props.imageState)) ? 'dashed' : 'solid'}
     onDragOver={(e) => {
-      e.nativeEvent.dataTransfer.setData("Url","http://www.google.fr");
+      e.nativeEvent.dataTransfer.setData('Url', 'http://www.google.fr');
       e.preventDefault();
     }}
-    onDrop={(e) => handleSetImage(e, imageState, setImageState)}
-    withLogo={R.not(R.isNil(R.prop('icon', imageState)))}
   >
-    {/* <Dropzone className='dropzone' onDrop={(e) => handleSetImage(e, imageState, setImageState)}>
-      <p>Upload</p>
-    </Dropzone> */}
-    {console.log('imageState', imageState)}
-    {renderImageWrapper(R.prop('icon', imageState))}
-  </DropzoneWrapper>
+    <ImageWrapper image={R.prop('icon', props.imageState)}/>
+  </Box>
 );
 
 const selectOptions = [
@@ -115,7 +110,7 @@ const ImageForm = props => {
       >
         Manage Images
       </Header>
-      {renderDropzoneWrapper(imageState, setImageState)}
+      <Dropzone imageState={imageState} setImageState={setImageState} />
       <Box
         display='flex'
         minHeight='30px'
@@ -165,7 +160,7 @@ const ImageForm = props => {
           Тип
         </Label>
         <SelectWrapper position='relative'>
-          <SelectComponent 
+          <SelectComponent
             p='0 10px'
             width='200px'
             height='30px'
@@ -179,7 +174,7 @@ const ImageForm = props => {
             onChange={(e) => setImageState({ ...imageState, type: e.currentTarget.value })}
           >
             {selectOptions.map((option, index) => (
-              <option key={index} value={option.value}>{option.label}</option>  
+              <option key={index} value={option.value}>{option.label}</option>
             ))}
           </SelectComponent>
         </SelectWrapper>
