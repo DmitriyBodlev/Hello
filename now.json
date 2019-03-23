@@ -1,5 +1,13 @@
 {
+  "version": 1,
+  "public": true,
+  "name": "my-nextjs-app",
+  "builds": [{ "src": "next.config.js", "use": "@now/next" }],
+  "builds": [
+    { "src": "*.html", "use": "@now/static" },
+    { "src": "*.js", "use": "@now/node" },
+  ],
   "routes": [
     { "src": "/_next/static/(?:[^/]+/pages|chunks|runtime)/.+", "headers": { "cache-control": "immutable" } }
-  ]
+  ],
 }
