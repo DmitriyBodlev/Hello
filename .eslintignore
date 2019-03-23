@@ -1,6 +1,6 @@
-.next/*
-.vscode/*
-cfn/*
-node_modules/*
-out/*
-static/*
+/.git
+/.vscode
+/.next
+out
+static
+node_modules

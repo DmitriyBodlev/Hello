@@ -1,15 +1,15 @@
 import * as R from 'ramda'
-import firebase from "firebase";
+import firebase from 'firebase';
 import React, { PureComponent } from 'react'
-///////////////////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 
 const config = {
-  apiKey: "AIzaSyCe6bMo9cVfby4sOdLNSbDeYNO82s5Flsw",
-  authDomain: "skoropys-9de8c.firebaseapp.com",
-  databaseURL: "https://skoropys-9de8c.firebaseio.com",
-  projectId: "skoropys-9de8c",
-  storageBucket: "skoropys-9de8c.appspot.com",
-  messagingSenderId: "929737833861"
+  apiKey: 'AIzaSyCe6bMo9cVfby4sOdLNSbDeYNO82s5Flsw',
+  authDomain: 'skoropys-9de8c.firebaseapp.com',
+  databaseURL: 'https://skoropys-9de8c.firebaseio.com',
+  projectId: 'skoropys-9de8c',
+  storageBucket: 'skoropys-9de8c.appspot.com',
+  messagingSenderId: '929737833861'
 };
 
 export const withFirebase = BaseComponent =>
@@ -23,7 +23,7 @@ export const withFirebase = BaseComponent =>
         storage: null,
       }
     }
-    componentWillMount() {
+    componentWillMount () {
       let fire = firebase;
       if (!firebase.apps.length) {
         fire = firebase.initializeApp(config);

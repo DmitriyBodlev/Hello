@@ -6,10 +6,8 @@ import {
   lifecycle,
   withHandlers } from 'recompose';
 // ui
-import { Box, Flex, PositionedBox } from '../../ui';
-// component modal
-import { CloseButton } from './ui';
-///////////////////////////////////////////////////////////////////////////////////////////////////
+import { Box, PositionedBox, PositionedFlex } from '../../ui';
+// ////////////////////////////////////////////////////////////////////////////////////////////////
 
 const enhance = compose(
   withHandlers({
@@ -20,34 +18,36 @@ const enhance = compose(
     }
   }),
   lifecycle({
-    componentDidMount() {
+    componentDidMount () {
       document.addEventListener('keyup', this.props.handleCloseModal);
     },
-    componentWillUnmount() {
+    componentWillUnmount () {
       document.removeEventListener('keyup', this.props.handleCloseModal);
     },
   }),
   pure,
 );
 
-export const renderCloseIcon = (props) => (
-  <CloseButton
+export const CloseIcon = (props) => (
+  <PositionedBox
     top='20px'
     right='15px'
     border='none'
     fontSize='20px'
     color='darkred'
+    cursor='pointer'
+    transform='scale'
     position='absolute'
     fontFamily='sans-serif'
     onClick={props.closeModal}
   >
     X
-  </CloseButton>
+  </PositionedBox>
 );
 
 export const ModalComponent = (props) => {
   return (
-    <Flex
+    <PositionedFlex
       top='0'
       zIndex='3'
       width='100vw'
@@ -57,21 +57,21 @@ export const ModalComponent = (props) => {
       alignItems='center'
       flexDirection='column'
       justifyContent='center'
-      background='rgba(53, 53, 53, 0.5)'
+      bg='rgba(53, 53, 53, 0.5)'
     >
       <PositionedBox
         top='50%'
         left='50%'
+        bg='white'
         borderRadius='2px'
         position='absolute'
-        background-color='gray'
         transform='translate(-50%, -50%)'
         boxShadow='0 0 8px 1px rgba(0, 0, 0, 0.2)'
       >
-        {renderCloseIcon(props)}
+        <CloseIcon closeModal={props.closeModal} />
         {props.children}
       </PositionedBox>
-    </Flex>
+    </PositionedFlex>
   );
 };
 
