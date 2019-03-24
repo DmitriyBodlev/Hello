@@ -248,7 +248,6 @@ export const Sections = (props) => {
       minWidth={props.symbolsSize / 1.5}
     >
       <Box mr='10px' width='250px' height='200px' borderRight='1px solid lightgray'>
-        {/* Drow Component */}
         <DrawBox />
       </Box>
       <Flex
@@ -302,3 +301,4 @@ export const SymbolsWorkspace = (props) => (
 )
 
 export default SymbolsWorkspace;
+
