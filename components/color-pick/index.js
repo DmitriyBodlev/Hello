@@ -1,44 +1,35 @@
-import React from "react";
-import { ChromePicker } from "react-color";
+import * as R from 'ramda';
+import React, { useState } from 'react';
+import { ChromePicker } from 'react-color';
+// ui
+import { Box, PositionedBox } from '../../ui';
+// ////////////////////////////////////////////////////////////////////////////////////////////////
 
-class ButtonExample extends React.Component {
-    state = {
-      displayColorPicker: false
-    };
-  
-    handleClick = () => {
-      this.setState({ displayColorPicker: !this.state.displayColorPicker });
-    };
-  
-    handleClose = color => {
-      this.props.onChangeColor(color.hex);
-      this.setState({ displayColorPicker: false });
-    };
-  
-    render() {
-      const popover = {
-        position: "absolute",
-        zIndex: "2"
-      };
-      const cover = {
-        position: "fixed",
-        top: "0px",
-        right: "0px",
-        bottom: "0px",
-        left: "0px"
-      };
-      return (
-        <div>
-          <button onClick={this.handleClick}>Pick Color</button>
-          {this.state.displayColorPicker ? (
-            <div style={popover}>
-              <ChromePicker onChange={this.handleClose} />
-            </div>
-          ) : null}
-        </div>
-      );
-    }
-  }
-  
-  export default ButtonExample;
-  
+const handlePickColor = (color, setDisplay, onChangeColor) => {
+  setDisplay(false);
+  onChangeColor(color.hex);
+};
+
+export const ColorPick = (props) => {
+  const [ display, setDisplay ] = useState(false);
+  return (
+    <PositionedBox position='relative' zIndex='20' >
+      <Box
+        width='20px'
+        height='20px'
+        cursor='pointer'
+        bg={props.color}
+        onClick={() => setDisplay(R.not(display))}/>
+      {
+        display
+        && (
+          <PositionedBox position='absolute' transform='translate(calc(-100% + 20px))'>
+            <ChromePicker onChange={(color) => handlePickColor(color, setDisplay, props.onChangeColor)} />
+          </PositionedBox>
+        )
+      }
+    </PositionedBox>
+  );
+};
+
+export default ColorPick;

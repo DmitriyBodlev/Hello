@@ -7,10 +7,15 @@ import * as H from '../../helpers';
 // ////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const handleEnter = (value, props) => {
+  const numberValue = Number(value);
   if (H.isNilOrEmpty(value)) {
     props.handleAddNewMove(props.sectionGuid);
-  } else if (R.and(H.notEquals(NaN, Number(value)), R.is(Number, Number(value)))) {
-    props.handleSetSymbol({ type: 'count', value }, props.guid, props.sectionGuid);
+  } else if (H.notEquals(NaN, numberValue)) {
+    if (R.lte(numberValue, 1)) {
+      props.handleCleanSymbol('count', props.guid, props.sectionGuid);
+    } else if (R.lte(numberValue, 99)) {
+      props.handleSetSymbol({ type: 'count', value }, props.guid, props.sectionGuid);
+    }
   } else if (R.isEmpty(props.movesForSelect)) {
     return;
   } else if (R.gte(value.length, 3)) {
@@ -49,7 +54,7 @@ export const enhance = compose(
       if (R.contains(key, R.range(0, 4))) {
         handleNumeral(e, key, props)
       }
-      if (R.and(R.equals(e.keyCode, 8), H.isNilOrEmpty(value))) {
+      if (R.and(R.contains(e.keyCode, [8, 46]), H.isNilOrEmpty(value))) {
         if (props.deletable) {
           props.handleDeleteMove(props.guid, props.sectionGuid);
           return;

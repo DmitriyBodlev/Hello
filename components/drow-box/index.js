@@ -1,95 +1,94 @@
-import React from "react";
-// react-draw
+import * as R from 'ramda';
 import CanvasDraw from 'react-canvas-draw';
-// css
-//  import className from "./style.css";
-// picker
-import ButtonExample from '../color-pick/index';
-// ui 
-import SmallWrapper from './ui';
+import React, { useState, useRef } from 'react';
+// components
+import ColorPick from '../color-pick/index';
+// helpers
+import * as H from '../../helpers';
+// ui
+import { Box, Flex, Button, Input, Label, PositionedBox, PositionedFlex } from '../../ui';
+// ////////////////////////////////////////////////////////////////////////////////////////////////
 
-export class DrawBox extends React.Component {
-    state = {
-      color: "orange",
-      width: 240,
-      height: 150,
-      brushRadius: 4,
-      lazyRadius: 0
-    };
-    render() {
-        return (
-          <div>
-            <SmallWrapper>
-              <ButtonExample onChangeColor={color => this.setState({ color })} />
-              <div
-                style={{
-                  display: "inline-block",
-                  width: "30px",
-                  height: "30px",
-                  backgroundColor: this.state.color,
-                  border: "1px solid #272727"
-                }}
-              />
-               <div>
-                {/* <label>Radius:</label> */}
-                <input
-                  type="number"
-                  value={this.state.brushRadius}
-                  style={{width:"50px"}}
-                  onChange={e =>
-                    this.setState({ brushRadius: parseInt(e.target.value, 10) })
-                  }
-                />
-              </div>
-            </SmallWrapper>
-            <div>
-              <button
-                onClick={() => {
-                  localStorage.setItem(
-                    "savedDrawing",
-                    this.saveableCanvas.getSaveData()
-                  );
-                }}
-              >
-                Save
-              </button>
-              <button
-                onClick={() => {
-                  this.saveableCanvas.clear();
-                }}
-              >
-                Clear
-              </button>
-              <button
-                onClick={() => {
-                  this.saveableCanvas.undo();
-                }}
-              >
-                Undo
-              </button>
-              {/* <div>
-                <label>Height:</label>
-                <input
-                  type="number"
-                  value={this.state.height}
-                  onChange={e =>
-                    this.setState({ height: parseInt(e.target.value, 10) })
-                  }
-                />
-              </div> */}
-             
-              <div />
-            </div>
-            <CanvasDraw
-              ref={canvasDraw => (this.saveableCanvas = canvasDraw)}
-              brushColor={this.state.color}
-              brushRadius={this.state.brushRadius}
-              lazyRadius={this.state.lazyRadius}
-              canvasWidth={this.state.width}
-              canvasHeight={this.state.height}
-            />
-          </div>
-        );
+export const StyledButton = (props) => (
+  <Button
+    mx='5px'
+    p='3px 5px'
+    border='none'
+    type='button'
+    color='white'
+    fontSize='12px'
+    cursor='pointer'
+    boxShadow='none'
+    fontWeight='bold'
+    borderRadius='5px'
+    onClick={props.onAction}
+    bg={R.or(props.bg, '#00057a')}
+  >
+    {props.children}
+  </Button>
+);
+
+export const DrawMenu = (props) => (
+  <Flex p='3px 5px' bg='#f0f6ff' justifyContent='space-between' borderBottom='1px solid lightgray'>
+    <StyledButton bg='#8283c0' onAction={() => props.saveableCanvas.current.undo()}>
+      Undo
+    </StyledButton>
+    <StyledButton bg='#da918f' onAction={() => props.saveableCanvas.current.clear()}>
+      Clear
+    </StyledButton>
+    <Label>
+      Radius:{' '}
+      <Input
+        width='50px'
+        type='number'
+        value={props.drawSetting.brushRadius}
+        onChange={e => props.setDrawSetting(
+          R.assoc('brushRadius', parseInt(e.target.value, 10), props.drawSetting)
+        )}
+      />
+    </Label>
+    <ColorPick
+      color={props.drawSetting.color}
+      onChangeColor={color => props.setDrawSetting(R.assoc('color', color, props.drawSetting))} />
+  </Flex>
+);
+
+export const DrawBox = (props) => {
+  const saveableCanvas = useRef(null)
+  const [ drawSetting, setDrawSetting ] = useState({
+    width: 250,
+    height: 200,
+    lazyRadius: 0,
+    brushRadius: 1,
+    color: 'black',
+    hideGrid: true,
+  });
+  return (
+    <PositionedFlex
+      height={200 + 28}
+      flexDirection='column'
+      justifyContent='flex-end'
+      boxShadow='0 0 5px 1px rgba(0, 0, 0, 0.3)'
+    >
+      {
+        H.shouldReturn(
+          props.willExportPDF,
+          <DrawMenu saveableCanvas={saveableCanvas} drawSetting={drawSetting} setDrawSetting={setDrawSetting} />,
+        )
       }
-    }
+      <CanvasDraw
+        ref={saveableCanvas}
+        catenaryColor='transparent'
+        disabled={props.willExportPDF}
+        brushColor={drawSetting.color}
+        canvasWidth={drawSetting.width}
+        hideGrid={drawSetting.hideGrid}
+        canvasHeight={drawSetting.height}
+        lazyRadius={drawSetting.lazyRadius}
+        brushRadius={drawSetting.brushRadius}
+      />
+    </PositionedFlex>
+  );
+};
+
 export default DrawBox;

@@ -1,8 +1,9 @@
 import * as R from 'ramda';
 import { pure } from 'recompose';
+import { useState } from 'react'
 // components
-import InputComponent from '../../components/input-symbol';
 import DrawBox from '../../components/drow-box/index';
+import InputComponent from '../../components/input-symbol';
 // helpers
 import * as H from '../../helpers';
 // ui
@@ -10,6 +11,7 @@ import {
   Box,
   Flex,
   Text,
+  Input,
   hoverStyles,
   PositionedBox,
   PositionedFlex } from '../../ui';
@@ -38,7 +40,8 @@ export const SymbolInput = (props) => (
       handleCleanMove={props.handleCleanMove}
       handleSetSymbol={props.handleSetSymbol}
       handleAddNewMove={props.handleAddNewMove}
-      handleDeleteMove={props.handleDeleteMove} />
+      handleDeleteMove={props.handleDeleteMove}
+      handleCleanSymbol={props.handleCleanSymbol} />
   </PositionedFlex>
 );
 
@@ -51,15 +54,15 @@ export const ClearActionWrap = (props) => (
         <PositionedBox
           top='2px'
           left='-2px'
-          width='10px'
+          width='12px'
           bg='#ededed'
-          height='10px'
+          height='12px'
           color='#ff7e00'
-          fontSize='10px'
+          fontSize='12px'
           cursor='pointer'
           fontWeight='bold'
           textAlign='center'
-          lineHeight='11px'
+          lineHeight='13px'
           borderRadius='50%'
           position='absolute'
           transform='scaleX(1.2)'
@@ -158,7 +161,8 @@ export const Move = pure((props) => {
             handleCleanMove={props.handleCleanMove}
             handleSetSymbol={props.handleSetSymbol}
             handleAddNewMove={props.handleAddNewMove}
-            handleDeleteMove={props.handleDeleteMove} />,
+            handleDeleteMove={props.handleDeleteMove}
+            handleCleanSymbol={props.handleCleanSymbol} />,
         )
       }
     </PositionedFlex>
@@ -234,22 +238,63 @@ export const Moves = (props) => {
   ));
 };
 
+export const Some = (props) => {
+  const [ active, setActive ] = useState(false)
+  return (
+    <Box width='100%'>
+      {
+        active
+        && (
+          <Input
+            width='100%'
+            height='20px'
+            border='none'
+            minWidth='50px'
+            value={props.value}
+            onBlur={() => setActive(false)}
+            ref={(r) => r && r.focus()}
+            onChange={(e) => props.onAction(e.target.value, props.type)} />
+        )
+      }
+      {
+        R.not(active)
+        && <Box width='100%' textAlign='center' onClick={() => setActive(true)}>{props.value}</Box>
+      }
+    </Box>
+  );
+}
+
+export const Fraction = () => {
+  const [ fraction, setFraction ] = useState({ up: '4', down: '4' })
+  const handleSetFraction = (value, type) => {
+    setFraction(R.assoc(type, value));
+  }
+  return (
+    <Flex alignItems='center' flexDirection='column' width='25px'>
+      <Some value={fraction.up} type='up' onAction={handleSetFraction} />
+      <Box bg='black' width='100%' height='2px' borderRadius='2px' />
+      <Some value={fraction.down} type='down' onAction={handleSetFraction} />
+    </Flex>
+  );
+};
+
 export const Sections = (props) => {
   const sections = R.reverse(R.values(props.movesSections));
   return sections.map((section) => (
     <PositionedFlex
       width='100%'
-      p='10px 20px'
-      position='relative'
-      alignItems='center'
-      minHeight={props.symbolsSize}
       key={section.guid}
+      position='relative'
+      alignItems='flex-start'
+      minHeight={props.symbolsSize}
       borderBottom='1px solid lightgray'
       minWidth={props.symbolsSize / 1.5}
     >
-      <Box mr='10px' width='250px' height='200px' borderRight='1px solid lightgray'>
-        {/* Drow Component */}
-        <DrawBox />
+      <Box mr='10px' width='max-content' height='max-content' borderRight='1px solid lightgray'>
+        <DrawBox willExportPDF={props.willExportPDF} />
+      </Box>
+      <Box mr='10px' mt={props.symbolsSize} transform='translateY(-50%)'>
+        <Fraction />
       </Box>
       <Flex
         width='100%'
