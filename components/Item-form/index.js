@@ -1,5 +1,4 @@
 import * as R from 'ramda';
-import Select from 'react-select';
 import React, { useState } from 'react';
 // helpers
 import * as H from '../../helpers';
@@ -94,33 +93,6 @@ const selectOptions = [
   { label: 'Style', value: 'style' },
   { label: 'With', value: 'with' },
 ];
-
-const options = [
-  { value: 'chocolate', label: 'Chocolate' },
-  { value: 'strawberry', label: 'Strawberry' },
-  { value: 'vanilla', label: 'Vanilla' }
-];
-
-class App extends React.Component {
-  state = {
-    selectedOption: null,
-  }
-  handleChange = (selectedOption) => {
-    this.setState({ selectedOption });
-    console.log(`Option selected:`, selectedOption);
-  }
-  render() {
-    const { selectedOption } = this.state;
-
-    return (
-      <Select
-        value={selectedOption}
-        onChange={this.handleChange}
-        options={options}
-      />
-    );
-  }
-}
 
 // TODO: with validation
 const ImageForm = props => {
