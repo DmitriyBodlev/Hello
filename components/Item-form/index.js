@@ -1,4 +1,3 @@
-
 import * as R from 'ramda';
 import React, { useState } from 'react';
 // helpers
@@ -93,7 +92,7 @@ const selectOptions = [
   { label: 'Move', value: 'move' },
   { label: 'Style', value: 'style' },
   { label: 'With', value: 'with' },
-]
+];
 
 // TODO: with validation
 const ImageForm = props => {

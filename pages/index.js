@@ -24,6 +24,7 @@ import {
   PositionedBox,
   PositionedFlex,
   SelectComponent } from '../ui';
+import data from '../data/main-data';
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 
 const uploadImage = (props, payload, callback) => {
@@ -194,28 +195,29 @@ const enhance = compose(
     // NOTE: must be here for a while
     componentWillMount () {
       // debugger;
-      let imagesRef = this.props.db
-        .ref('images')
-        .orderByKey()
+      // let imagesRef = this.props.db
+      //   .ref('images')
+      //   .orderByKey()
 
-        .limitToLast(100);
-      imagesRef
-        .once('value')
-        .then(snapshot => {
-          const images = R.mapObjIndexed(
-            (value, key) => R.assoc('id', key, value),
-            snapshot.val() || []
-          );
-          localStorage.setItem('data', JSON.stringify(images));
-          this.props.setData(images);
-        })
-        .catch(error => console.log(error))
-        .then(() => {
-        });
+      //   .limitToLast(100);
+      // imagesRef
+      //   .once('value')
+      //   .then(snapshot => {
+      //     const images = R.mapObjIndexed(
+      //       (value, key) => R.assoc('id', key, value),
+      //       snapshot.val() || []
+      //     );
+      //     localStorage.setItem('data', JSON.stringify(images));
+      //     this.props.setData(images);
+      //   })
+      //   .catch(error => console.log(error))
+      //   .then(() => {
+      //   });
     },
     componentDidMount () {
       const images = JSON.parse(localStorage.getItem('data'));
       this.props.setData(images);
+      // this.props.setData(data);
     }
   }),
   pure,
@@ -326,7 +328,7 @@ export default withFirebase(enhance((props) => (
       <script
         src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js'
         integrity='sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/'
-        crossorigin='anonymous' />
+        crossOrigin='anonymous' />
     </Head>
     {
       props.modalOpened
