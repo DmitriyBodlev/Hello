@@ -24,6 +24,7 @@ import {
   PositionedBox,
   PositionedFlex,
   SelectComponent } from '../ui';
+import data from '../data/main-data';
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 
 const uploadImage = (props, payload, callback) => {
@@ -216,6 +217,7 @@ const enhance = compose(
     componentDidMount () {
       const images = JSON.parse(localStorage.getItem('data'));
       this.props.setData(images);
+      // this.props.setData(data);
     }
   }),
   pure,
