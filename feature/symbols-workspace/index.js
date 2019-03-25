@@ -347,3 +347,4 @@ export const SymbolsWorkspace = (props) => (
 )
 
 export default SymbolsWorkspace;
+
