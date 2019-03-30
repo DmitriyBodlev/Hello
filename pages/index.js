@@ -3,7 +3,7 @@ import Head from 'next/head';
 import shortid from 'shortid';
 import firebase from 'firebase';
 import * as html2canvas from 'html2canvas'
-import { pure, compose, withState, lifecycle, withHandlers } from 'recompose';
+import { pure, compose, withState, lifecycle, withProps, withHandlers } from 'recompose';
 // components
 import CommonModal from '../components/modal';
 import ItemForm from '../components/Item-form';
@@ -73,6 +73,25 @@ const genSection = (prev = {}, setFocused) => {
   );
 };
 
+const getSymbolsSize = (symbolsSize) => {
+  let newSymbolsSize = symbolsSize;
+  if (R.not(document)) return symbolsSize;
+  const offsetWidth = R.prop('offsetWidth', document.getElementById('divToPrint'));
+  if (R.not(offsetWidth)) return symbolsSize;
+  if (offsetWidth <= 500) {
+    newSymbolsSize = newSymbolsSize / 3;
+    if (newSymbolsSize < 20) {
+      newSymbolsSize = 20;
+    }
+  } else if (offsetWidth <= 930) {
+    newSymbolsSize = newSymbolsSize / 2;
+    if (newSymbolsSize < 30) {
+      newSymbolsSize = 30;
+    }
+  }
+  return newSymbolsSize;
+}
+
 const enhance = compose(
   withState('data', 'setData', []),
   withState('focusedSymbol', 'setFocused', null),
@@ -80,6 +99,7 @@ const enhance = compose(
   withState('symbolsSize', 'setSymbolsSize', 100),
   withState('modalOpened', 'setModalOpened', false),
   withState('willExportPDF', 'setWillExportPDF', false),
+  withState('initialSymbolsSize', 'setInitialSymbolsSize', 100),
   withState('movesSections', 'setMovesSections', (props) => genSection({}, props.setFocused)),
   withHandlers({
     // SECTION HANDLES
@@ -218,6 +238,7 @@ const enhance = compose(
       const images = JSON.parse(localStorage.getItem('data'));
       this.props.setData(images);
       // this.props.setData(data);
+      this.props.setSymbolsSize(getSymbolsSize(this.props.initialSymbolsSize))
     }
   }),
   pure,
@@ -340,7 +361,7 @@ export default withFirebase(enhance((props) => (
     }
     <GlobalStyle />
     <Box mt='70px' height='calc(100vh - 70px)' width='100vw' overflow='auto'>
-      <SymbolsWorkspace {...props} />
+      <SymbolsWorkspace {...props} symbolsSize={props.willExportPDF ? props.initialSymbolsSize : props.symbolsSize } />
     </Box>
     <PositionedFlex
       top='0'
@@ -357,7 +378,7 @@ export default withFirebase(enhance((props) => (
         <StyledButton onAction={() => props.handlePrintDocument()}>Export Image</StyledButton>
         <StyledButton onAction={() => props.handlePrintDocument(true)}>Export PDF</StyledButton>
       </Box>
-      <SelectFontSize symbolsSize={props.symbolsSize} setSymbolsSize={props.setSymbolsSize} />
+      <SelectFontSize symbolsSize={props.initialSymbolsSize} setSymbolsSize={props.setInitialSymbolsSize} />
       <StyledButton onAction={() => props.setModalOpened(true)}>Add</StyledButton>
       <Label>
         {'PDF Mode '}

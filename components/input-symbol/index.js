@@ -94,6 +94,17 @@ const setFocused = (r, focused, handleCleanState) => {
   }
 };
 
+export const getFontSize = (symbolsSize) => {
+  let fontSize = symbolsSize / 3;
+  if (fontSize > 20) {
+    fontSize = 20;
+  }
+  if (fontSize < 10) {
+    fontSize = 10;
+  }
+  return fontSize;
+};
+
 export const SearchedSymbols = (props) => (
   <PositionedBox
     left='0'
@@ -119,7 +130,7 @@ export const SearchedSymbols = (props) => (
         onClick={() => props.handleClickMove(item)}
         bg={R.equals(index, 0) ? 'lightblue' : 'white'}
       >
-        <PositionedBox fontSize={props.symbolsSize / 6} position='absolute' top='2px' left='2px'>
+        <PositionedBox fontSize={getFontSize(props.symbolsSize)} position='absolute' top='2px' left='2px'>
           {index + 1}
         </PositionedBox>
         <Box maxWidth={props.symbolsSize / 1.5} height={props.symbolsSize / 1.5}>
@@ -153,12 +164,13 @@ export const InputComponent = enhance((props) => (
     <Input
       width='100%'
       border='none'
-      minWidth='50px'
       height='20px'
+      minWidth='50px'
       value={props.value}
       onKeyDown={props.handleKeyDown}
       onChange={props.handleChangeInput}
-      ref={(r) => setFocused(r, props.focused)} />
+      ref={(r) => setFocused(r, props.focused)}
+      onFocus={() => props.setDrawBoxOpened(false)} />
     <SearchedSymbols
       symbolsSize={props.symbolsSize}
       movesForSelect={props.movesForSelect}
