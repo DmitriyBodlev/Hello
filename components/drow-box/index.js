@@ -85,18 +85,16 @@ export const DrawBox = (props) => {
           <DrawMenu saveableCanvas={saveableCanvas} drawSetting={drawSetting} setDrawSetting={setDrawSetting} />,
         )
       }
-      <Box>
-        <CanvasDraw
-          ref={saveableCanvas}
-          catenaryColor='transparent'
-          disabled={props.willExportPDF}
-          brushColor={drawSetting.color}
-          canvasWidth={drawSetting.width}
-          hideGrid={drawSetting.hideGrid}
-          canvasHeight={drawSetting.height}
-          lazyRadius={drawSetting.lazyRadius}
-          brushRadius={drawSetting.brushRadius} />
-      </Box>
+      <CanvasDraw
+        ref={saveableCanvas}
+        catenaryColor='transparent'
+        disabled={props.willExportPDF}
+        brushColor={drawSetting.color}
+        canvasWidth={drawSetting.width}
+        hideGrid={drawSetting.hideGrid}
+        canvasHeight={drawSetting.height}
+        lazyRadius={drawSetting.lazyRadius}
+        brushRadius={drawSetting.brushRadius} />
       {
         R.and(R.not(props.willExportPDF), R.not(props.opened))
         && (
