@@ -5,8 +5,6 @@ import React, { useState, useRef } from 'react';
 import ColorPick from '../color-pick/index';
 // helpers
 import * as H from '../../helpers';
-// icons
-import * as I from '../../icons';
 // ui
 import { Box, Flex, Button, Input, Label, PositionedBox, PositionedFlex } from '../../ui';
 // ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,52 +63,30 @@ export const DrawBox = (props) => {
     color: 'black',
     hideGrid: true,
   });
-  const shouldShowDraw = R.or(props.opened, props.willExportPDF);
-  R.map(
-    (item) => { item.style.display = H.ifElse(shouldShowDraw, 'block', 'none'); return item; },
-    R.pathOr([{ style: {} }], ['current', 'canvas'], saveableCanvas),
-  )
   return (
     <PositionedFlex
-      overflow='hidden'
+      height={200 + 28}
       flexDirection='column'
       justifyContent='flex-end'
-      width={shouldShowDraw ? 'auto' : '30px'}
-      height={shouldShowDraw ? 200 + 28 : '30px'}
       boxShadow='0 0 5px 1px rgba(0, 0, 0, 0.3)'
     >
       {
         H.shouldReturn(
-          R.or(props.willExportPDF, R.not(props.opened)),
+          props.willExportPDF,
           <DrawMenu saveableCanvas={saveableCanvas} drawSetting={drawSetting} setDrawSetting={setDrawSetting} />,
         )
       }
-      <Box>
-        <CanvasDraw
-          ref={saveableCanvas}
-          catenaryColor='transparent'
-          disabled={props.willExportPDF}
-          brushColor={drawSetting.color}
-          canvasWidth={drawSetting.width}
-          hideGrid={drawSetting.hideGrid}
-          canvasHeight={drawSetting.height}
-          lazyRadius={drawSetting.lazyRadius}
-          brushRadius={drawSetting.brushRadius} />
-      </Box>
-      {
-        R.and(R.not(props.willExportPDF), R.not(props.opened))
-        && (
-          <Box
-            p='5px'
-            width='30px'
-            height='30px'
-            boxShadow='0 0 5px 1px rgba(0, 0, 0, 0.3)'
-            onClick={() => props.setDrawBoxOpened(true)}
-          >
-            {I.drawIcon()}
-          </Box>
-        )
-      }
+      <CanvasDraw
+        ref={saveableCanvas}
+        catenaryColor='transparent'
+        disabled={props.willExportPDF}
+        brushColor={drawSetting.color}
+        canvasWidth={drawSetting.width}
+        hideGrid={drawSetting.hideGrid}
+        canvasHeight={drawSetting.height}
+        lazyRadius={drawSetting.lazyRadius}
+        brushRadius={drawSetting.brushRadius}
+      />
     </PositionedFlex>
   );
 };
