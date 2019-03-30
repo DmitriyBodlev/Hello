@@ -235,9 +235,9 @@ const enhance = compose(
       //   });
     },
     componentDidMount () {
-      const images = JSON.parse(localStorage.getItem('data'));
-      this.props.setData(images);
-      // this.props.setData(data);
+      // const images = JSON.parse(localStorage.getItem('data'));
+      // this.props.setData(images);
+      this.props.setData(data);
       this.props.setSymbolsSize(getSymbolsSize(this.props.initialSymbolsSize))
     }
   }),
