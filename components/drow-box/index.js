@@ -65,14 +65,18 @@ export const DrawBox = (props) => {
     color: 'black',
     hideGrid: true,
   });
-  R.forez((item) => { item.style.display = H.ifElse(R.or(props.willExportPDF, props.opened), 'block', 'none'); return item; }, R.pathOr([{ style: {} }], ['current', 'canvas'], saveableCanvas))
+  const shouldShowDraw = R.or(props.opened, props.willExportPDF);
+  R.map(
+    (item) => { item.style.display = H.ifElse(shouldShowDraw, 'block', 'none'); return item; },
+    R.pathOr([{ style: {} }], ['current', 'canvas'], saveableCanvas),
+  )
   return (
     <PositionedFlex
       overflow='hidden'
       flexDirection='column'
       justifyContent='flex-end'
-      width={props.opened ? 'auto' : '30px'}
-      height={props.opened ? 200 + 28 : '30px'}
+      width={shouldShowDraw ? 'auto' : '30px'}
+      height={shouldShowDraw ? 200 + 28 : '30px'}
       boxShadow='0 0 5px 1px rgba(0, 0, 0, 0.3)'
     >
       {
@@ -94,7 +98,7 @@ export const DrawBox = (props) => {
           brushRadius={drawSetting.brushRadius} />
       </Box>
       {
-        R.not(props.opened)
+        R.and(R.not(props.willExportPDF), R.not(props.opened))
         && (
           <Box
             p='5px'
