@@ -100,6 +100,12 @@ export const hoverStyles = css`
   }
 `
 
+export const mediaPhoneStyles = css`
+  ${createMaxWithMediaQuery(500)} {
+    display: ${({ phoneDisplay }) => phoneDisplay};
+  }
+`
+
 export const Box = styled.div`
   ${flex}
   ${size}
@@ -135,6 +141,7 @@ export const Box = styled.div`
   text-transform: ${({ textTransform }) => textTransform};
   cursor: ${({ cursor }) => R.or(cursor, 'initial')};
   ${({ additionalStyles }) => additionalStyles};
+  ${mediaPhoneStyles}
 `;
 
 export const Flex = styled(Box)`
@@ -234,6 +241,7 @@ export const Input = styled.input`
   ${width}
   ${height}
   ${border}
+  ${minWidth}
   ${fontSize}
   ${background}
   ${borderRadius}

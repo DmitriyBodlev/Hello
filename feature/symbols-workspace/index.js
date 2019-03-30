@@ -14,7 +14,8 @@ import {
   Input,
   hoverStyles,
   PositionedBox,
-  PositionedFlex } from '../../ui';
+  PositionedFlex,
+  mediaPhoneStyles } from '../../ui';
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 
 const Symbol = (props) => (
@@ -39,6 +40,7 @@ export const SymbolInput = (props) => (
       sectionGuid={props.sectionGuid}
       handleCleanMove={props.handleCleanMove}
       handleSetSymbol={props.handleSetSymbol}
+      setDrawBoxOpened={props.setDrawBoxOpened}
       handleAddNewMove={props.handleAddNewMove}
       handleDeleteMove={props.handleDeleteMove}
       handleCleanSymbol={props.handleCleanSymbol} />
@@ -65,6 +67,7 @@ export const ClearActionWrap = (props) => (
           lineHeight='13px'
           borderRadius='50%'
           position='absolute'
+          phoneDisplay='none'
           transform='scaleX(1.2)'
           fontFamily='sans-serif'
           onClick={props.handleCleanSymbol}
@@ -76,6 +79,17 @@ export const ClearActionWrap = (props) => (
     {props.children}
   </PositionedFlex>
 );
+
+export const getFontSize = (symbolsSize) => {
+  let fontSize = symbolsSize / 3;
+  if (fontSize > 20) {
+    fontSize = 20;
+  }
+  if (fontSize < 10) {
+    fontSize = 10;
+  }
+  return fontSize;
+};
 
 export const Move = pure((props) => {
   const condition = R.and(props.focused, R.not(props.willExportPDF))
@@ -105,7 +119,7 @@ export const Move = pure((props) => {
             willExportPDF={props.willExportPDF}
             handleCleanSymbol={() => props.handleCleanSymbol(props.count.type, props.guid, props.sectionGuid)}
           >
-            <Text fontSize={props.symbolsSize / 2.5}>{props.count.value}</Text>
+            <Text fontSize={getFontSize(props.symbolsSize)}>{props.count.value}</Text>
           </ClearActionWrap>
         )
       }
@@ -160,6 +174,7 @@ export const Move = pure((props) => {
             sectionGuid={props.sectionGuid}
             handleCleanMove={props.handleCleanMove}
             handleSetSymbol={props.handleSetSymbol}
+            setDrawBoxOpened={props.setDrawBoxOpened}
             handleAddNewMove={props.handleAddNewMove}
             handleDeleteMove={props.handleDeleteMove}
             handleCleanSymbol={props.handleCleanSymbol} />,
@@ -230,6 +245,7 @@ export const Moves = (props) => {
       willExportPDF={props.willExportPDF}
       handleCleanMove={props.handleCleanMove}
       handleSetSymbol={props.handleSetSymbol}
+      setDrawBoxOpened={props.setDrawBoxOpened}
       handleSetFocused={props.handleSetFocused}
       handleAddNewMove={props.handleAddNewMove}
       handleDeleteMove={props.handleDeleteMove}
@@ -278,12 +294,15 @@ export const Fraction = () => {
   );
 };
 
-export const Sections = (props) => {
-  const sections = R.reverse(R.values(props.movesSections));
-  return sections.map((section) => (
+export const Section = (props) => {
+  const ifSectionFocused = R.contains(props.focusedSymbol, props.section.movesGuids)
+  const [ drawBoxOpened, setDrawBoxOpened ] = useState(false);
+  if (H.isFalse(ifSectionFocused) && H.isTrue(drawBoxOpened)) {
+    setDrawBoxOpened(false)
+  }
+  return (
     <PositionedFlex
       width='100%'
-      key={section.guid}
       position='relative'
       alignItems='flex-start'
       minHeight={props.symbolsSize}
@@ -291,7 +310,10 @@ export const Sections = (props) => {
       minWidth={props.symbolsSize / 1.5}
     >
       <Box mr='10px' width='max-content' height='max-content' borderRight='1px solid lightgray'>
-        <DrawBox willExportPDF={props.willExportPDF} />
+        <DrawBox
+          willExportPDF={props.willExportPDF}
+          opened={H.ifElse(ifSectionFocused, drawBoxOpened, false)}
+          setDrawBoxOpened={ifSectionFocused ? setDrawBoxOpened : (e) => props.handleSetFocused(e, props.section.movesGuids) } />
       </Box>
       <Box mr='10px' mt={props.symbolsSize} transform='translateY(-50%)'>
         <Fraction />
@@ -300,14 +322,18 @@ export const Sections = (props) => {
         width='100%'
         height='100%'
         flexWrap='wrap'
-        onClick={(e) => props.handleSetFocused(e, section.movesGuids)}
+        onClick={(e) => {
+          setDrawBoxOpened(false)
+          props.handleSetFocused(e, props.section.movesGuids)
+        }}
       >
         <Moves
-          section={section}
           data={props.data}
+          section={props.section}
           symbolsSize={props.symbolsSize}
           focusedSymbol={props.focusedSymbol}
           willExportPDF={props.willExportPDF}
+          setDrawBoxOpened={setDrawBoxOpened}
           handleCleanMove={props.handleCleanMove}
           handleSetSymbol={props.handleSetSymbol}
           handleSetFocused={props.handleSetFocused}
@@ -318,11 +344,39 @@ export const Sections = (props) => {
       {H.shouldReturn(props.willExportPDF, <AddSectionButton handleAddNewSection={props.handleAddNewSection} />)}
       {/* {H.shouldReturn(props.willExportPDF, <SectionActions />)} */}
     </PositionedFlex>
+  );
+};
+
+export const Sections = (props) => {
+  const sections = R.reverse(R.values(props.movesSections));
+  return sections.map((section) => (
+    <Section
+      section={section}
+      key={section.guid}
+      data={props.data}
+      symbolsSize={props.symbolsSize}
+      focusedSymbol={props.focusedSymbol}
+      willExportPDF={props.willExportPDF}
+      handleCleanMove={props.handleCleanMove}
+      handleSetSymbol={props.handleSetSymbol}
+      handleSetFocused={props.handleSetFocused}
+      handleAddNewMove={props.handleAddNewMove}
+      handleDeleteMove={props.handleDeleteMove}
+      handleCleanSymbol={props.handleCleanSymbol}
+      handleAddNewSection={props.handleAddNewSection}
+    />
   ))
 }
 
 export const SymbolsWorkspace = (props) => (
-  <Box m='40px auto 20px' id='divToPrint' maxWidth='900px' minHeight='100vw' border='1px solid lightgray'>
+  <Box
+    id='divToPrint'
+    maxWidth='900px'
+    minHeight='100vh'
+    m='40px auto 20px'
+    border='1px solid lightgray'
+    minWidth={props.willExportPDF && 900}
+  >
     <Flex
       width='100%'
       alignItems='center'
@@ -347,4 +401,3 @@ export const SymbolsWorkspace = (props) => (
 )
 
 export default SymbolsWorkspace;
-
