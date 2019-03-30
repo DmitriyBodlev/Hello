@@ -85,8 +85,7 @@ export const DrawBox = (props) => {
         hideGrid={drawSetting.hideGrid}
         canvasHeight={drawSetting.height}
         lazyRadius={drawSetting.lazyRadius}
-        brushRadius={drawSetting.brushRadius}
-      />
+        brushRadius={drawSetting.brushRadius} />
     </PositionedFlex>
   );
 };
