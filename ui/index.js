@@ -236,6 +236,19 @@ export const Label = styled.label`
   }
 `;
 
+export const TextArea = styled.textarea`
+  ${space}
+  ${width}
+  ${color}
+  ${display}
+  ${fontSize}
+  ${alignItems}
+  &.required::after {
+    content: '*';
+    color: red;
+  }
+`;
+
 export const Input = styled.input`
   ${space}
   ${width}
