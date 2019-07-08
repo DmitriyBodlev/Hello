@@ -1,4 +1,5 @@
 import * as R from 'ramda';
+import shortid from 'shortid';
 // constants
 import * as GC from '../constants';
 //  /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -22,6 +23,8 @@ export const ifElse = (predicate, ifSt, elseSt) => {
   if (predicate) return ifSt;
   return elseSt;
 };
+
+export const genShortId = () => shortid.generate();
 
 export const getLocaleItem = (path, locale) => R.pathOr('', path, locale);
 

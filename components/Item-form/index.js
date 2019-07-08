@@ -1,5 +1,7 @@
 import * as R from 'ramda';
 import React, { useState } from 'react';
+// constants
+import * as C from '../../constants';
 // helpers
 import * as H from '../../helpers';
 // select
@@ -91,43 +93,13 @@ export const Dropzone = (props) => (
   </Box>
 );
 
-const selectOptions = [
-  { label: '', value: '' },
-  { label: 'Move', value: 'move' },
-  { label: 'Style', value: 'style' },
-  { label: 'With', value: 'with' },
-];
-
-
-class AppSelect extends React.Component {
-  state = {
-    selectedOption: null,
-  }
-  handleChange = (selectedOption) => {
-    this.setState({ selectedOption });
-    console.log(`Option selected:`, selectedOption);
-  }
-  render() {
-    const { selectedOption } = this.state;
- 
-    return (
-      <Select
-        isMulti={true}
-        value={selectedOption}
-        options={selectOptions}
-        onChange={this.handleChange}
-      />
-    ); 
-}}
-
 // TODO: with validation
 const ImageForm = props => {
-  let initialState = { icon: null, name: '', nameTwo: '', type: '', withImageUpdate: false };
+  let initialState = { icon: null, name: '', engName: '', type: [], description: '', withImageUpdate: false };
   if (R.not(R.isNil(props.initialValues))) {
     initialState = R.merge(initialState, props.initialValues)
   }
   const [ imageState, setImageState ] = useState(initialState);
-  const [a, b] = useState('');
   return (
     <Box background='#b3a8b8'>
       <Header
@@ -137,28 +109,27 @@ const ImageForm = props => {
         Manage Images
       </Header>
       <Dropzone imageState={imageState} setImageState={setImageState} />
-      <Box
-        display='flex'
+      <Flex
         minHeight='30px'
         alignItems='center'
       >
         <Label
-          color='black'
           width='70px'
-          display='flex'
+          color='black'
+          htmlFor='name'
           fontSize='16px'
           m='5px 0 5px 15px'
         >
           Назва(укр)
         </Label>
-        <Box
-          display='flex'
+        <Flex
           position='relative'
           alignItems='center'
           justifyContent='baseline'
         >
           <Input
             p='0 10px'
+            name='name'
             width='190px'
             fontSize='16'
             height='30px'
@@ -168,24 +139,22 @@ const ImageForm = props => {
             border='1px solid grey'
             value={imageState.name}
             onChange={(e) => setImageState({ ...imageState, name: e.currentTarget.value })} />
-        </Box>
-      </Box>
-      <Box
-        display='flex'
+        </Flex>
+      </Flex>
+      <Flex
         minHeight='30px'
         alignItems='center'
       >
         <Label
-          color='black'
           width='70px'
-          display='flex'
+          color='black'
           fontSize='16px'
+          htmlFor='engName'
           m='5px 0 5px 15px'
         >
           Назва(eng)
         </Label>
-        <Box
-          display='flex'
+        <Flex
           position='relative'
           alignItems='center'
           justifyContent='baseline'
@@ -195,16 +164,16 @@ const ImageForm = props => {
             width='190px'
             fontSize='16'
             height='30px'
+            name='engName'
             background='white'
             borderRadius='2px'
             m='0px 15px 15px 25px'
             border='1px solid grey'
-            value={imageState.nameTwo}
-            onChange={(e) => setImageState({ ...imageState, nameTwo: e.currentTarget.value })} />
-        </Box>
-      </Box>
-      <Box
-        display='flex'
+            value={imageState.engName}
+            onChange={(e) => setImageState({ ...imageState, engName: e.currentTarget.value })} />
+        </Flex>
+      </Flex>
+      <Flex
         minHeight='30px'
         alignItems='center'
         justifyContent='baseline'
@@ -218,48 +187,37 @@ const ImageForm = props => {
         >
           Тип
         </Label>
-        <Flex
-          mr='25px'
-          width='215px'
-          flexDirection='column'
-        >
-        {/* <SelectWrapper position='relative'> */}
-          {/* <SelectComponent
-            p='0 10px'
-            width='200px'
-            height='30px'
-            lineHeight='30px'
-            background='white'
-            borderRadius='2px'
-            m='10px 15px 15px'
-            position='relative'
-            border='1px solid gray'
-            value={imageState.type}
-            onChange={(e) => setImageState({ ...imageState, type: e.currentTarget.value })}
-          >
-            {selectOptions.map((option, index) => (
-              <option key={index} value={option.value}>{option.label}</option>
-            ))}
-          </SelectComponent> */}
-          
-          {/* <Select 
-            isMulti={true}
-            options={selectOptions}
-            value={selectOptions.label}
-          >
-          </Select> */}
-          <AppSelect/>
-          <TextArea
-            my='20px'
-          >
-            lorem15
-          </TextArea>
+        <Select
+          isMulti={true}
+          value={imageState.type}
+          options={C.selectOptions}
+          onChange={(selectedOption) => setImageState({ ...imageState, type: selectedOption })}
+        />
+      </Flex>
+      <Flex
+        position='relative'
+        alignItems='center'
+        justifyContent='baseline'
+      >
         {/* </SelectWrapper> */}
-        </Flex>
-      </Box>
-      <Box
+        <Label
+          width='70px'
+          color='black'
+          display='flex'
+          fontSize='16px'
+          m='5px 0 5px 15px'
+          htmlFor='description'
+        >
+          Опис
+        </Label>
+        <TextArea
+          my='20px'
+          name='description'
+          value={imageState.description}
+          onChange={(e) => setImageState({ ...imageState, engName: e.currentTarget.value })} />
+      </Flex>
+      <Flex
         p='10px 20px'
-        display='flex'
         justifyContent='space-between'
       >
         <Button
@@ -289,10 +247,9 @@ const ImageForm = props => {
         >
           Cancel
         </Button>
-      </Box>
+      </Flex>
     </Box>
   );
 };
 
 export default ImageForm;
-

@@ -11,3 +11,16 @@ export const ROUTE_PRIVACY = '/privacy';
 
 export const FIRST_UI_BREAKPOINT = 640;
 export const DISPLAY_UI_BREAKPOINT = 1080;
+
+export const selectOptions = [
+  { label: '', value: '' },
+  { label: 'Центер', value: 'center' },
+  { label: 'Низ', value: 'bottom' },
+  { label: 'Верх', value: 'top' },
+  { label: 'Голова', value: 'head' },
+  { label: 'Нога', value: 'leg' },
+  { label: 'Рука', value: 'hand' },
+  { label: 'Кисть', value: 'wrist' },
+  { label: 'Очі', value: 'eyes' },
+  { label: 'Нота', value: 'note' },
+];

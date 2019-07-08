@@ -105,7 +105,10 @@ export const DrawBox = (props) => {
             width='30px'
             height='30px'
             boxShadow='0 0 5px 1px rgba(0, 0, 0, 0.3)'
-            onClick={() => props.setDrawBoxOpened(true)}
+            onClick={(e) => {
+              e.stopPropagation();
+              props.setDrawBoxOpened(true)
+            }}
           >
             {I.drawIcon()}
           </Box>
