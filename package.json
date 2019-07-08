@@ -11,7 +11,6 @@
     "precommit": "lint-staged"
   },
   "dependencies": {
-    "firebase": "^4.13.1",
     "html2canvas": "^1.0.0-alpha.12",
     "next": "7.0.0",
     "next-optimized-images": "^2.3.3",
