@@ -315,30 +315,31 @@ const moveEnhance = compose(
 const getHeight = (symbolsSize, item) => {
   let height = symbolsSize;
   if (H.isNotNilAndNotEmpty(item.hand)) {
-    height = R.divide(height, 2)
-    // const degL = R.pathOr(0, ['hand', 'degL'], item);
-    // const degR = R.pathOr(0, ['hand', 'degR'], item);
-    // if (R.or(R.gte(degL, 0), R.gte(degR, 0))) {
-    //   const availHeigh = R.multiply(symbolsSize, 0.45)
-    //   let multiplier = 0;
-    //   if (R.gte(degL, degR)) {
-    //     multiplier = R.divide(degL, 1.5)
-    //   } else {
-    //     multiplier = R.divide(degR, 1.5)
-    //   }
-    //   height = R.subtract(height, R.multiply(0.09, multiplier));
-    // }
-    // if (R.or(R.lt(degL, 0), R.lt(degR, 0))) {
-    //   const availHeigh = R.multiply(symbolsSize, 0.45)
-    //   let multiplier = 0;
-    //   if (R.lte(degL, degR)) {
-    //     multiplier = R.divide(R.multiply(degL, -1), 1.5)
-    //   } else {
-    //     multiplier = R.divide(R.multiply(degR, -1), 1.5)
-    //   }
-    //   height = R.subtract(height, R.multiply(0.09, multiplier));
-    //   console.log('degR', degR, 'multiplier', multiplier, 'height', height);
-    // }
+    // height = R.divide(height, 2)
+    height = R.multiply(symbolsSize, 0.1);
+    const degL = R.pathOr(0, ['hand', 'degL'], item);
+    const degR = R.pathOr(0, ['hand', 'degR'], item);
+    if (R.or(R.gte(degL, 0), R.gte(degR, 0))) {
+      const availHeigh = R.multiply(symbolsSize, 0.40)
+      let multiplier = 0;
+      if (R.gte(degL, degR)) {
+        multiplier = degL
+      } else {
+        multiplier = degR
+      }
+      height = R.add(height, R.multiply(availHeigh, R.divide(multiplier, 9)));
+    }
+    if (R.or(R.lt(degL, 0), R.lt(degR, 0))) {
+      const availHeigh = R.multiply(symbolsSize, 0.40)
+      let multiplier = 0;
+      if (R.lte(degL, degR)) {
+        multiplier = R.multiply(degL, -1)
+      } else {
+        multiplier = R.multiply(degR, -1)
+      }
+      height = R.add(height, R.multiply(availHeigh, R.divide(multiplier, 9)));
+      console.log('degR', degR, 'multiplier', multiplier, 'height', height);
+    }
   }
   return height;
 }
@@ -382,7 +383,7 @@ export const Move = moveEnhance((props) => {
               focused={props.focused}
               willExportPDF={props.willExportPDF}
               handleCleanSymbol={() => props.handleCleanSymbol(props.top.type, props.guid, props.sectionGuid)}
-              positionStyles={{ top: '0', right: '50%', position: 'absolute', transform: 'translate(50%, -100%)' }}
+              positionStyles={{ top: '0', right: `calc(50% - ${H.isNotNilAndNotEmpty(props.count) ? '10px' : '0px'})`, position: 'absolute', transform: 'translate(50%, -100%)' }}
             >
               <Symbol height={props.symbolsSize / 2} icon={props.top.icon} />
             </ClearActionWrap>
@@ -424,7 +425,7 @@ export const Move = moveEnhance((props) => {
               focused={props.focused}
               willExportPDF={props.willExportPDF}
               handleCleanSymbol={() => props.handleCleanSymbol(props.bottom.type, props.guid, props.sectionGuid)}
-              positionStyles={{ bottom: '0', right: '50%', position: 'absolute', transform: 'translate(50%, 110%)' }}
+              positionStyles={{ bottom: '0', right: `calc(50% - ${H.isNotNilAndNotEmpty(props.count) ? '10px' : '0px'})`, position: 'absolute', transform: 'translate(50%, 110%)' }}
             >
               <Symbol height={props.symbolsSize / 2} icon={props.bottom.icon} />
             </ClearActionWrap>
