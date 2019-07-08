@@ -320,28 +320,24 @@ const getHeight = (symbolsSize, item) => {
     // const degR = R.pathOr(0, ['hand', 'degR'], item);
     // if (R.or(R.gte(degL, 0), R.gte(degR, 0))) {
     //   const availHeigh = R.multiply(symbolsSize, 0.45)
-    //   const availHeighStep = R.divide(availHeigh, 6).toFixed(1);
     //   let multiplier = 0;
     //   if (R.gte(degL, degR)) {
     //     multiplier = R.divide(degL, 1.5)
     //   } else {
     //     multiplier = R.divide(degR, 1.5)
     //   }
-    //   multiplier = R.subtract(6, multiplier);
-    //   height = R.subtract(height, R.multiply(availHeighStep, multiplier));
+    //   height = R.subtract(height, R.multiply(0.09, multiplier));
     // }
     // if (R.or(R.lt(degL, 0), R.lt(degR, 0))) {
     //   const availHeigh = R.multiply(symbolsSize, 0.45)
-    //   const availHeighStep = R.divide(availHeigh, 6).toFixed(1);
     //   let multiplier = 0;
     //   if (R.lte(degL, degR)) {
     //     multiplier = R.divide(R.multiply(degL, -1), 1.5)
     //   } else {
     //     multiplier = R.divide(R.multiply(degR, -1), 1.5)
     //   }
-    //   multiplier = R.subtract(6, multiplier);
-    //   height = R.subtract(height, R.multiply(availHeighStep, multiplier));
-    //   console.log('degR', degR, 'availHeighStep', availHeighStep, 'multiplier', multiplier, 'height', height);
+    //   height = R.subtract(height, R.multiply(0.09, multiplier));
+    //   console.log('degR', degR, 'multiplier', multiplier, 'height', height);
     // }
   }
   return height;
