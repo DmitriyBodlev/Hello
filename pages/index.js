@@ -1,8 +1,8 @@
 import * as R from 'ramda';
 import Head from 'next/head';
 import shortid from 'shortid';
-import firebase from 'firebase';
-import * as html2canvas from 'html2canvas'
+// import firebase from 'firebase';
+// import * as html2canvas from 'html2canvas'
 import { pure, compose, withState, lifecycle, withProps, withHandlers } from 'recompose';
 // components
 import CommonModal from '../components/modal';
@@ -31,27 +31,27 @@ import dataJSON from '../data/data.json';
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 
 const uploadImage = (props, payload, callback) => {
-  let uploadTask = props.storage.ref().child('images/' + payload.name + '.img').put(payload.imageFile);
-  uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED,
-    (snapshot) => {
-      let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      console.log('Upload is ' + progress + '% done');
-      switch (snapshot.state) {
-        case firebase.storage.TaskState.PAUSED:
-          console.log('Upload is paused');
-          break;
-        case firebase.storage.TaskState.RUNNING:
-          console.log('Upload is running');
-          break;
-        default: break;
-      }
-    }, (error) => {
-      console.log(error);
-    }, () => {
-      uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-        callback(R.assoc('imageURL', downloadURL, payload))
-      });
-    });
+  // let uploadTask = props.storage.ref().child('images/' + payload.name + '.img').put(payload.imageFile);
+  // uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED,
+  //   (snapshot) => {
+  //     let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+  //     console.log('Upload is ' + progress + '% done');
+  //     switch (snapshot.state) {
+  //       case firebase.storage.TaskState.PAUSED:
+  //         console.log('Upload is paused');
+  //         break;
+  //       case firebase.storage.TaskState.RUNNING:
+  //         console.log('Upload is running');
+  //         break;
+  //       default: break;
+  //     }
+  //   }, (error) => {
+  //     console.log(error);
+  //   }, () => {
+  //     uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+  //       callback(R.assoc('imageURL', downloadURL, payload))
+  //     });
+  //   });
 };
 
 const genMove = (prev = {}, setFocused, moveGuid, order, tactCount) => {
@@ -212,8 +212,8 @@ const enhance = compose(
       // debugger;
       props.setWillExportPDF(true);
       const input = document.getElementById('divToPrint');
-      html2canvas(input)
-        .then((canvas) => {
+      // html2canvas(input)
+      //   .then((canvas) => {
           // const jsPDF = window.jsPDF
           // const imgData = canvas.toDataURL('image/png');
           // if (makePDF) {
@@ -235,8 +235,8 @@ const enhance = compose(
           // } else {
           //   // window.location.href = imgData.replace('image/png', 'image/octet-stream');
           // }
-          props.setWillExportPDF(false);
-        });
+        //   props.setWillExportPDF(false);
+        // });
     }
   }),
   withHandlers({
