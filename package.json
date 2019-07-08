@@ -11,6 +11,7 @@
     "precommit": "lint-staged"
   },
   "dependencies": {
+    "html2canvas": "^1.0.0-alpha.12",
     "next": "7.0.0",
     "next-optimized-images": "^2.3.3",
     "ramda": "^0.25.0",
