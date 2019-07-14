@@ -212,31 +212,31 @@ const enhance = compose(
       // debugger;
       props.setWillExportPDF(true);
       const input = document.getElementById('divToPrint');
-      // html2canvas(input)
-      //   .then((canvas) => {
-      //     const jsPDF = window.jsPDF
-      //     const imgData = canvas.toDataURL('image/png');
-      //     if (makePDF) {
-      //       const pdf = new jsPDF('p', 'pt', 'a4'); // eslint-disable-line
-      //       const imgWidth = 595;
-      //       const pageHeight = 842;
-      //       const imgHeight = canvas.height * imgWidth / canvas.width;
-      //       let heightLeft = imgHeight;
-      //       let position = 0;
-      //       pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      //       heightLeft -= pageHeight;
-      //       while (heightLeft >= 0) {
-      //         position = heightLeft - imgHeight;
-      //         pdf.addPage();
-      //         pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      //         heightLeft -= pageHeight;
-      //       }
-      //       pdf.save('download.pdf');
-      //     } else {
-      //       window.location.href = imgData.replace('image/png', 'image/octet-stream');
-      //     }
-      //     props.setWillExportPDF(false);
-      //   });
+      window.html2canvas(input)
+        .then((canvas) => {
+          const jsPDF = window.jsPDF
+          const imgData = canvas.toDataURL('image/png');
+          if (makePDF) {
+            const pdf = new jsPDF('p', 'pt', 'a4'); // eslint-disable-line
+            const imgWidth = 595;
+            const pageHeight = 842;
+            const imgHeight = canvas.height * imgWidth / canvas.width;
+            let heightLeft = imgHeight;
+            let position = 0;
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+            while (heightLeft >= 0) {
+              position = heightLeft - imgHeight;
+              pdf.addPage();
+              pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+              heightLeft -= pageHeight;
+            }
+            pdf.save('download.pdf');
+          } else {
+            window.location.href = imgData.replace('image/png', 'image/octet-stream');
+          }
+          props.setWillExportPDF(false);
+        });
     }
   }),
   withHandlers({
@@ -388,6 +388,9 @@ export default withFirebase(enhance((props) => (
       <script
         src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js'
         integrity='sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/'
+        crossOrigin='anonymous' />
+      <script
+        src='../static/html2canvas.min.js'
         crossOrigin='anonymous' />
     </Head>
     {
