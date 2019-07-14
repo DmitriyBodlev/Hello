@@ -29,6 +29,10 @@ import {
 import data from '../data/main-data';
 import dataJSON from '../data/data.json';
 // /////////////////////////////////////////////////////////////////////////////////////////////////
+let html2canvas = null
+if (process.browser) {
+  html2canvas = require('html2canvas')
+}
 
 const uploadImage = (props, payload, callback) => {
   // let uploadTask = props.storage.ref().child('images/' + payload.name + '.img').put(payload.imageFile);
