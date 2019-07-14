@@ -1,8 +1,6 @@
 import * as R from 'ramda';
 import Head from 'next/head';
 import shortid from 'shortid';
-import dynamic from 'next/dynamic';
-// import { asyncReactor } from 'async-reactor'
 // import firebase from 'firebase';
 // import * as html2canvas from 'html2canvas'
 import { pure, compose, withState, lifecycle, withProps, withHandlers } from 'recompose';
@@ -31,10 +29,6 @@ import {
 import data from '../data/main-data';
 import dataJSON from '../data/data.json';
 // /////////////////////////////////////////////////////////////////////////////////////////////////
-// let html2canvas = null
-// if (process.browser) {
-//   html2canvas = require('html2canvas')
-// }
 
 const uploadImage = (props, payload, callback) => {
   // let uploadTask = props.storage.ref().child('images/' + payload.name + '.img').put(payload.imageFile);
@@ -59,11 +53,6 @@ const uploadImage = (props, payload, callback) => {
   //     });
   //   });
 };
-
-// const DynamicComponentWithAsyncReactor = asyncReactor(async () => {
-//   const Hello4 = await import('../components/hello4')
-//   return (<Hello4 />)
-// })
 
 const genMove = (prev = {}, setFocused, moveGuid, order, tactCount) => {
   if (H.isNotNil(setFocused)) {
@@ -323,11 +312,6 @@ export const SelectFontSize = (props) => {
     </Label>
   )
 };
-
-// const DynamicComponentWithNoSSR = dynamic(
-//   import('../components/hello3'),
-//   { ssr: false }
-// )
 
 export const OpenListButton = (props) => {
   const commonStyles = {
