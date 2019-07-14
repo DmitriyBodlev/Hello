@@ -212,7 +212,6 @@ const enhance = compose(
       // debugger;
       props.setWillExportPDF(true);
       const input = document.getElementById('divToPrint');
-      // const html2canvas = require('html2canvas');
       // html2canvas(input)
       //   .then((canvas) => {
       //     const jsPDF = window.jsPDF
