@@ -21,15 +21,20 @@ const typeColors = {
   move: 'blue',
   style: 'green',
   with: '#924754',
+  center: 'purple',
+  bottom: 'pink',
+  top: 'lightgray',
 };
 
 export const SymbolDetails = (props) => (
-  <Flex
+  <PositionedFlex
     mb='5px'
     width='100%'
     height='100px'
     borderRadius='5px'
+    position='relative'
     border='1px solid lightgray'
+    onClick={props.handleUpdateMove}
     boxShadow='0px 0px 2px 1px rgba(0, 0, 0, 0.1)'
   >
     <Box p='5px' textAlign='center' width='100px' borderRight='1px solid lightgray'>
@@ -40,24 +45,38 @@ export const SymbolDetails = (props) => (
         <Box mr='5px' textTransform='capitalize'>
           {props.name}
         </Box>
-        <Box
-          p='2px 5px'
-          color='white'
-          borderRadius='5px'
-          bg={typeColors[props.type]}
-        >
-          {props.type}
-        </Box>
+        <Flex alignItems='center' p='5px 10px' width='100%'>
+          {R.map((type) => (
+            <Box
+              p='2px 5px'
+              color='white'
+              borderRadius='5px'
+              key={H.genShortId()}
+              bg={typeColors[type]}
+            >
+              {type}
+            </Box>
+          ), props.type)}
+        </Flex>
       </Flex>
       <Box
         width='100%'
         p='5px 10px'
         borderTop='1px solid lightgray'
       >
-        Some Description
+        {R.or(props.description, '-')}
       </Box>
     </Box>
-  </Flex>
+    <PositionedFlex
+      top='2px'
+      right='2px'
+      cursor='pointer'
+      position='absolute'
+      onClick={(e) => props.handleDeleteImage(e, props.guid)}
+    >
+      X
+    </PositionedFlex>
+  </PositionedFlex>
 );
 
 export const SymbolsList = (props) => (
@@ -89,7 +108,11 @@ export const SymbolsList = (props) => (
         flexDirection='column'
       >
         {R.values(props.data).map((item) => (
-          <SymbolDetails {...item} key={item.guid} />
+          <SymbolDetails
+            {...item}
+            key={item.guid}
+            handleDeleteImage={props.handleDeleteImage}
+            handleUpdateMove={() => props.handleUpdateMove(item)} />
         ))}
       </Flex>
     </Box>

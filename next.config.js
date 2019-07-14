@@ -1,9 +1,4 @@
-const optimizedImages = require('next-optimized-images');
-
-module.exports = optimizedImages({
-  exportPathMap: function () {
-    return {
-      '/': { page: '/' },
-    }
-  }
-})
+const withCSS = require('@zeit/next-css')
+module.exports = withCSS({
+  target: 'serverless'
+});

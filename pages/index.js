@@ -1,12 +1,14 @@
 import * as R from 'ramda';
 import Head from 'next/head';
 import shortid from 'shortid';
-import firebase from 'firebase';
-import * as html2canvas from 'html2canvas'
-import { pure, compose, withState, lifecycle, withHandlers } from 'recompose';
+// import firebase from 'firebase';
+// import * as html2canvas from 'html2canvas'
+import { pure, compose, withState, lifecycle, withProps, withHandlers } from 'recompose';
 // components
 import CommonModal from '../components/modal';
 import ItemForm from '../components/Item-form';
+// constants
+import * as C from '../constants';
 // features
 import SymbolsList from '../feature/symbols-list';
 import SymbolsWorkspace from '../feature/symbols-workspace';
@@ -25,53 +27,71 @@ import {
   PositionedFlex,
   SelectComponent } from '../ui';
 import data from '../data/main-data';
+import dataJSON from '../data/data.json';
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 
 const uploadImage = (props, payload, callback) => {
-  let uploadTask = props.storage.ref().child('images/' + payload.name + '.img').put(payload.imageFile);
-  uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED,
-    (snapshot) => {
-      let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      console.log('Upload is ' + progress + '% done');
-      switch (snapshot.state) {
-        case firebase.storage.TaskState.PAUSED:
-          console.log('Upload is paused');
-          break;
-        case firebase.storage.TaskState.RUNNING:
-          console.log('Upload is running');
-          break;
-        default: break;
-      }
-    }, (error) => {
-      console.log(error);
-    }, () => {
-      uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-        callback(R.assoc('imageURL', downloadURL, payload))
-      });
-    });
+  // let uploadTask = props.storage.ref().child('images/' + payload.name + '.img').put(payload.imageFile);
+  // uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED,
+  //   (snapshot) => {
+  //     let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+  //     console.log('Upload is ' + progress + '% done');
+  //     switch (snapshot.state) {
+  //       case firebase.storage.TaskState.PAUSED:
+  //         console.log('Upload is paused');
+  //         break;
+  //       case firebase.storage.TaskState.RUNNING:
+  //         console.log('Upload is running');
+  //         break;
+  //       default: break;
+  //     }
+  //   }, (error) => {
+  //     console.log(error);
+  //   }, () => {
+  //     uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+  //       callback(R.assoc('imageURL', downloadURL, payload))
+  //     });
+  //   });
 };
 
-const genMove = (prev = {}, setFocused, moveGuid) => {
+const genMove = (prev = {}, setFocused, moveGuid, order, tactCount) => {
   if (H.isNotNil(setFocused)) {
     setFocused(moveGuid);
   }
-  return R.assoc(moveGuid, { order: R.values(prev).length, guid: moveGuid }, prev);
+  return R.assoc(moveGuid, { order, guid: moveGuid, tactCount }, prev);
 };
 
-const genSection = (prev = {}, setFocused) => {
+const genSection = (prev = {}, order, setFocused) => {
   const guid = shortid.generate();
   const moveGuid = shortid.generate();
   return R.assoc(
     guid,
     {
       guid,
-      order: R.values(prev).length,
-      moves: genMove({}, setFocused, moveGuid),
-      movesGuids: R.append(moveGuid, R.or(prev.movesGuids, []))
+      order,
     },
     prev,
   );
 };
+
+const getSymbolsSize = (symbolsSize) => {
+  let newSymbolsSize = symbolsSize;
+  if (R.not(document)) return symbolsSize;
+  const offsetWidth = R.prop('offsetWidth', document.getElementById('divToPrint'));
+  if (R.not(offsetWidth)) return symbolsSize;
+  if (offsetWidth <= 500) {
+    newSymbolsSize = newSymbolsSize / 3;
+    if (newSymbolsSize < 20) {
+      newSymbolsSize = 20;
+    }
+  } else if (offsetWidth <= 930) {
+    newSymbolsSize = newSymbolsSize / 2;
+    if (newSymbolsSize < 30) {
+      newSymbolsSize = 30;
+    }
+  }
+  return newSymbolsSize;
+}
 
 const enhance = compose(
   withState('data', 'setData', []),
@@ -79,39 +99,33 @@ const enhance = compose(
   withState('menuOpened', 'setMenuOpened', false),
   withState('symbolsSize', 'setSymbolsSize', 100),
   withState('modalOpened', 'setModalOpened', false),
+  withState('modalContent', 'setModalContent', null),
   withState('willExportPDF', 'setWillExportPDF', false),
-  withState('movesSections', 'setMovesSections', (props) => genSection({}, props.setFocused)),
+  withState('initialSymbolsSize', 'setInitialSymbolsSize', 100),
+  withState('movesSections', 'setMovesSections', (props) => genSection({}, 0, props.setFocused)),
   withHandlers({
     // SECTION HANDLES
-    handleAddNewSection: (props) => () => (
-      props.setMovesSections((prev) => (
-        genSection(prev, props.setFocused)
-      ))
-    ),
-    // SECTION HANDLES
-    // MOVE HANDLERS
-    handleAddNewMove: (props) => (sectionGuid) => (
-      props.setMovesSections((prev) => {
-        const section = prev[sectionGuid];
-        const moveGuid = shortid.generate();
-        section.movesGuids = R.append(moveGuid, R.or(section.movesGuids, []))
-        section.moves = genMove(section.moves, props.setFocused, moveGuid)
-        return R.assoc(sectionGuid, section, prev)
-      })
-    ),
-    handleSetSymbol: ({ setMovesSections }) => (item, moveGuid, sectionGuid) => (
-      setMovesSections((prev) => (
-        R.assocPath([sectionGuid, 'moves', moveGuid, item.type], item, prev)
-      ))
-    ),
-    handleCleanSymbol: ({ setMovesSections }) => (type, moveGuid, sectionGuid) => (
-      setMovesSections((prev) => (
-        R.assocPath([sectionGuid, 'moves', moveGuid, type], null, prev)
-      ))
-    ),
+    handleAddNewSection: (props) => (sectionGuid) => {
+      const currentSection = R.pathOr({}, [sectionGuid], props.movesSections)
+      let order = currentSection.order;
+      let movesSections = R.map((section) => {
+        return {
+          ...section,
+          order: H.ifElse(R.gte(section.order, order), R.inc(section.order), section.order)
+        }
+      }, props.movesSections);
+      const some = genSection(movesSections, order, props.setFocused);
+      props.setMovesSections(some);
+    },
+    handleDeleteSection: (props) => (sectionGuid) => {
+      if (R.lte(R.values(props.movesSections).length, 1)) return;
+      props.setMovesSections((prev) => R.omit([sectionGuid], prev));
+    },
     handleSetFocused: (props) => (e, data) => {
-      e.preventDefault();
-      e.stopPropagation();
+      if (e) {
+        H.isNotNil(e.preventDefault) && e.preventDefault();
+        H.isNotNil(e.preventDefault) && e.stopPropagation();
+      }
       if (R.is(Array, data)) {
         if (H.notContains([props.focusedSymbol], data)) {
           props.setFocused(R.last(data))
@@ -120,104 +134,150 @@ const enhance = compose(
       }
       props.setFocused(data)
     },
-    handleDeleteMove: (props) => (moveGuid, sectionGuid) => {
-      let forFocus = null;
-      const movesSections = props.movesSections;
-      const section = movesSections[sectionGuid];
-      section.moves = R.omit([moveGuid], section.moves);
-      section.movesGuids = R.without([moveGuid], R.or(section.movesGuids, []));
-      forFocus = R.last(section.movesGuids);
-      props.setMovesSections(R.assoc(sectionGuid, section, movesSections));
-      props.setFocused(forFocus);
-    },
-    handleCleanMove: (props) => (moveGuid, sectionGuid) => (
-      props.setMovesSections((prev) => (
-        R.assocPath(
-          [sectionGuid, 'moves', moveGuid],
-          R.pick(['order', 'guid'], R.path([sectionGuid, 'moves', moveGuid], prev)),
-          prev,
-        )
-      ))
-    ),
     // MOVE HANDLERS
     // FIREBASE HANDLERS
-    handleCreateImage: (props) => (data) => {
-      uploadImage(
-        props,
-        data,
-        (data) => (
-          props.db
-            .ref('images')
-            .push(data)
-            .then(value => {
-              props.setModalOpened(false)
-            })
-            .catch((error) => console.log('error', error))
-            .then(() => {
-              console.log('images')
-            })
-        )
-      )
+    handleCreateImage: (props) => (values) => {
+      const data = props.data;
+      const itemId = shortid.generate();
+      const item = { ...values, guid: itemId, type: R.map(R.prop('value'), values.type) };
+      const valuesForPick = ['name', 'description', 'icon', 'type', 'engName', 'guid'];
+      const itemForLocal = R.pick(valuesForPick, item)
+      const newCollectionData = R.assoc(itemId, itemForLocal, data);
+      localStorage.setItem('symbols', JSON.stringify(newCollectionData));
+      props.setData(newCollectionData);
+      props.setModalOpened(false);
+      // uploadImage(
+      //   props,
+      //   values,
+      //   (values) => (
+      //     props.db
+      //       .ref('images')
+      //       .push(values)
+      //       .then(value => {
+      //         props.setModalOpened(false)
+      //       })
+      //       .catch((error) => console.log('error', error))
+      //       .then(() => {
+      //         console.log('images')
+      //       })
+      //   )
+      // )
+    },
+    handleUpdateImage: (props) => (values) => {
+      const data = props.data;
+      const item = { ...values, type: R.map(R.prop('value'), values.type) };
+      const valuesForPick = ['name', 'description', 'icon', 'type', 'engName', 'guid'];
+      const itemForLocal = R.pick(valuesForPick, item)
+      const newCollectionData = R.assoc(values.guid, itemForLocal, data);
+      localStorage.setItem('symbols', JSON.stringify(newCollectionData));
+      props.setData(newCollectionData);
+      props.setModalOpened(false);
+      // uploadImage(
+      //   props,
+      //   values,
+      //   (values) => (
+      //     props.db
+      //       .ref('images')
+      //       .push(values)
+      //       .then(value => {
+      //         props.setModalOpened(false)
+      //       })
+      //       .catch((error) => console.log('error', error))
+      //       .then(() => {
+      //         console.log('images')
+      //       })
+      //   )
+      // )
+    },
+    handleDeleteImage: (props) => (e, guid) => {
+      e.stopPropagation()
+      const data = props.data;
+      const newCollectionData = R.omit([guid], data);
+      localStorage.setItem('symbols', JSON.stringify(newCollectionData));
+      props.setData(newCollectionData);
+    },
+    // FIREBASE HANDLERS
+    handleExportJSON: (props) => () => {
+      const jsonData = localStorage.getItem('symbols');
+      let dataStr = JSON.stringify(jsonData);
+      let dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);  
+      let exportFileDefaultName = 'data.js';
+      let linkElement = document.createElement('a');
+      linkElement.setAttribute('href', dataUri);
+      linkElement.setAttribute('download', exportFileDefaultName);
+      linkElement.click();
     },
     // FIREBASE HANDLERS
     handlePrintDocument: (props) => (makePDF) => {
       // debugger;
       props.setWillExportPDF(true);
       const input = document.getElementById('divToPrint');
-      html2canvas(input)
-        .then((canvas) => {
-          const jsPDF = window.jsPDF
-          const imgData = canvas.toDataURL('image/png');
-          if (makePDF) {
-            const pdf = new jsPDF('p', 'pt', 'a4'); // eslint-disable-line
-            const imgWidth = 595;
-            const pageHeight = 842;
-            const imgHeight = canvas.height * imgWidth / canvas.width;
-            let heightLeft = imgHeight;
-            let position = 0;
-            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
-            while (heightLeft >= 0) {
-              position = heightLeft - imgHeight;
-              pdf.addPage();
-              pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-              heightLeft -= pageHeight;
-            }
-            pdf.save('download.pdf');
-          } else {
-            window.location.href = imgData.replace('image/png', 'image/octet-stream');
-          }
-          props.setWillExportPDF(false);
-        });
+      // html2canvas(input)
+      //   .then((canvas) => {
+      //     const jsPDF = window.jsPDF
+      //     const imgData = canvas.toDataURL('image/png');
+      //     if (makePDF) {
+      //       const pdf = new jsPDF('p', 'pt', 'a4'); // eslint-disable-line
+      //       const imgWidth = 595;
+      //       const pageHeight = 842;
+      //       const imgHeight = canvas.height * imgWidth / canvas.width;
+      //       let heightLeft = imgHeight;
+      //       let position = 0;
+      //       pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      //       heightLeft -= pageHeight;
+      //       while (heightLeft >= 0) {
+      //         position = heightLeft - imgHeight;
+      //         pdf.addPage();
+      //         pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      //         heightLeft -= pageHeight;
+      //       }
+      //       pdf.save('download.pdf');
+      //     } else {
+      //       window.location.href = imgData.replace('image/png', 'image/octet-stream');
+      //     }
+      //     props.setWillExportPDF(false);
+      //   });
     }
   }),
-  lifecycle({
-    // NOTE: must be here for a while
-    componentWillMount () {
-      // debugger;
-      // let imagesRef = this.props.db
-      //   .ref('images')
-      //   .orderByKey()
-
-      //   .limitToLast(100);
-      // imagesRef
-      //   .once('value')
-      //   .then(snapshot => {
-      //     const images = R.mapObjIndexed(
-      //       (value, key) => R.assoc('id', key, value),
-      //       snapshot.val() || []
-      //     );
-      //     localStorage.setItem('data', JSON.stringify(images));
-      //     this.props.setData(images);
-      //   })
-      //   .catch(error => console.log(error))
-      //   .then(() => {
-      //   });
+  withHandlers({
+    // MODAL
+    handleCreateMove: (props) => () => {
+      props.setModalOpened(true)
+      props.setModalContent(<ItemForm onAction={props.handleCreateImage} closeModal={() => props.setModalOpened(false)} />)
     },
+    handleUpdateMove: (props) => (item) => {
+      let type = item.type;
+      if (R.is(String, type)) {
+        type = R.of(type);
+      }
+      const indexedOptions = R.indexBy(R.prop('value'), C.selectOptions);
+      type = type.map((type) => indexedOptions[type]);
+      const content = (
+        <ItemForm
+          onAction={props.handleUpdateImage}
+          initialValues={R.assoc('type', type, item)}
+          closeModal={() => props.setModalOpened(false)} />
+      );
+      props.setModalOpened(true)
+      props.setModalContent(content);
+    }
+    // MODAL
+  }),
+  lifecycle({
     componentDidMount () {
-      // const images = JSON.parse(localStorage.getItem('data'));
-      // this.props.setData(images);
-      this.props.setData(data);
+      const localSymbols = localStorage.getItem('symbols');
+      let decodedData = null;
+      let JSONData = {};
+      if (H.isNotNilAndNotEmpty(dataJSON)) {
+        decodedData = decodeURIComponent(dataJSON);
+        JSONData = JSON.parse(decodedData);
+      }
+      if (H.isNotNilAndNotEmpty(localSymbols)) {
+        const symbols = JSON.parse(localSymbols);
+        this.props.setData(R.merge(JSONData, symbols));
+        return;
+      }
+      this.props.setData(JSONData);
     }
   }),
   pure,
@@ -334,19 +394,19 @@ export default withFirebase(enhance((props) => (
       props.modalOpened
       && (
         <CommonModal closeModal={() => props.setModalOpened(false)}>
-          <ItemForm onAction={props.handleCreateImage} closeModal={() => props.setModalOpened(false)} />
+          {props.modalContent}
         </CommonModal>
       )
     }
     <GlobalStyle />
     <Box mt='70px' height='calc(100vh - 70px)' width='100vw' overflow='auto'>
-      <SymbolsWorkspace {...props} />
+      <SymbolsWorkspace {...props} symbolsSize={props.willExportPDF ? props.initialSymbolsSize : props.symbolsSize } />
     </Box>
     <PositionedFlex
       top='0'
       left='0'
       p='10px'
-      zIndex='20'
+      zIndex='10'
       width='100%'
       height='70px'
       bg='lightblue'
@@ -357,8 +417,9 @@ export default withFirebase(enhance((props) => (
         <StyledButton onAction={() => props.handlePrintDocument()}>Export Image</StyledButton>
         <StyledButton onAction={() => props.handlePrintDocument(true)}>Export PDF</StyledButton>
       </Box>
-      <SelectFontSize symbolsSize={props.symbolsSize} setSymbolsSize={props.setSymbolsSize} />
-      <StyledButton onAction={() => props.setModalOpened(true)}>Add</StyledButton>
+      <SelectFontSize symbolsSize={props.initialSymbolsSize} setSymbolsSize={props.setInitialSymbolsSize} />
+      <StyledButton onAction={props.handleCreateMove}>Add New Symbol</StyledButton>
+      <StyledButton onAction={props.handleExportJSON}>Export Symbols File</StyledButton>
       <Label>
         {'PDF Mode '}
         <input
@@ -366,7 +427,11 @@ export default withFirebase(enhance((props) => (
           checked={props.willExportPDF}
           onChange={() => props.setWillExportPDF(R.not(props.willExportPDF))} />
       </Label>
-      <SymbolsList menuOpened={props.menuOpened} data={props.data} />
+      <SymbolsList
+        data={props.data}
+        menuOpened={props.menuOpened}
+        handleUpdateMove={props.handleUpdateMove}
+        handleDeleteImage={props.handleDeleteImage} />
       <OpenListButton menuOpened={props.menuOpened} setMenuOpened={props.setMenuOpened} />
     </PositionedFlex>
   </div>

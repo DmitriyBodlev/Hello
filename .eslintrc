@@ -10,7 +10,7 @@
 	],
 	"globals": {},
 	"rules": {
-	  "compat/compat": "warn",
+	  "compat/compat": "off",
 	  "jsx-a11y/alt-text": "warn",
 	  "no-dupe-class-members": "warn",
 	  "no-mixed-operators": "warn",
