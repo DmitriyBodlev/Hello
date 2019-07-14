@@ -265,6 +265,7 @@ const enhance = compose(
   }),
   lifecycle({
     componentDidMount () {
+      const html2canvas = require('html2canvas');
       const localSymbols = localStorage.getItem('symbols');
       let decodedData = null;
       let JSONData = {};
