@@ -389,9 +389,6 @@ export default withFirebase(enhance((props) => (
         src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js'
         integrity='sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/'
         crossOrigin='anonymous' />
-      <script
-        src='../static/html2canvas.min.js'
-        crossOrigin='anonymous' />
     </Head>
     {
       props.modalOpened
