@@ -236,7 +236,7 @@ const enhance = compose(
       //       window.location.href = imgData.replace('image/png', 'image/octet-stream');
       //     }
       //     props.setWillExportPDF(false);
-      //   }); 
+      //   });
     }
   }),
   withHandlers({
