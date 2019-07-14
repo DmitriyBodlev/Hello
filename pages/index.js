@@ -2,7 +2,7 @@ import * as R from 'ramda';
 import Head from 'next/head';
 import shortid from 'shortid';
 // import firebase from 'firebase';
-import dynamic from 'next/dynamic'
+// import * as html2canvas from 'html2canvas'
 import { pure, compose, withState, lifecycle, withProps, withHandlers } from 'recompose';
 // components
 import CommonModal from '../components/modal';
@@ -29,7 +29,6 @@ import {
 import data from '../data/main-data';
 import dataJSON from '../data/data.json';
 // /////////////////////////////////////////////////////////////////////////////////////////////////
-const html2canvas = dynamic(import('html2canvas'))
 
 const uploadImage = (props, payload, callback) => {
   // let uploadTask = props.storage.ref().child('images/' + payload.name + '.img').put(payload.imageFile);
@@ -213,31 +212,32 @@ const enhance = compose(
       // debugger;
       props.setWillExportPDF(true);
       const input = document.getElementById('divToPrint');
-      // html2canvas(input)
-      //   .then((canvas) => {
-      //     const jsPDF = window.jsPDF
-      //     const imgData = canvas.toDataURL('image/png');
-      //     if (makePDF) {
-      //       const pdf = new jsPDF('p', 'pt', 'a4'); // eslint-disable-line
-      //       const imgWidth = 595;
-      //       const pageHeight = 842;
-      //       const imgHeight = canvas.height * imgWidth / canvas.width;
-      //       let heightLeft = imgHeight;
-      //       let position = 0;
-      //       pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      //       heightLeft -= pageHeight;
-      //       while (heightLeft >= 0) {
-      //         position = heightLeft - imgHeight;
-      //         pdf.addPage();
-      //         pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      //         heightLeft -= pageHeight;
-      //       }
-      //       pdf.save('download.pdf');
-      //     } else {
-      //       window.location.href = imgData.replace('image/png', 'image/octet-stream');
-      //     }
-      //     props.setWillExportPDF(false);
-      //   });
+      const html2canvas = require('html2canvas');
+      html2canvas(input)
+        .then((canvas) => {
+          const jsPDF = window.jsPDF
+          const imgData = canvas.toDataURL('image/png');
+          if (makePDF) {
+            const pdf = new jsPDF('p', 'pt', 'a4'); // eslint-disable-line
+            const imgWidth = 595;
+            const pageHeight = 842;
+            const imgHeight = canvas.height * imgWidth / canvas.width;
+            let heightLeft = imgHeight;
+            let position = 0;
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+            while (heightLeft >= 0) {
+              position = heightLeft - imgHeight;
+              pdf.addPage();
+              pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+              heightLeft -= pageHeight;
+            }
+            pdf.save('download.pdf');
+          } else {
+            window.location.href = imgData.replace('image/png', 'image/octet-stream');
+          }
+          props.setWillExportPDF(false);
+        });
     }
   }),
   withHandlers({
