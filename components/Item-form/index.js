@@ -53,21 +53,21 @@ const handleSetImage = (event, imageState, setImageState) => {
   const imageFile = event.nativeEvent.dataTransfer.files[0];
   const imageType = /image.*/;
   if (R.not(imageFile)) return;
-  // if (imageFile.type.match(imageType)) {
-  //   const reader = new window.FileReader();
-  //   reader.onload = () => {
-  //     return (
-  //       setImageState({
-  //         ...imageState,
-  //         icon: reader.result,
-  //         fileName: imageFile.name,
-  //         withImageUpdate: true,
-  //         imageFile,
-  //       })
-  //     )
-  //   };
-  //   reader.readAsDataURL(imageFile);
-  // }
+  if (imageFile.type.match(imageType)) {
+    const reader = new window.FileReader();
+    reader.onload = () => {
+      return (
+        setImageState({
+          ...imageState,
+          icon: reader.result,
+          fileName: imageFile.name,
+          withImageUpdate: true,
+          imageFile,
+        })
+      )
+    };
+    reader.readAsDataURL(imageFile);
+  }
 };
 
 export const Dropzone = (props) => (
