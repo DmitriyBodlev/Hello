@@ -4,19 +4,19 @@
   "scripts": {
     "dev": "next",
     "start": "next start",
+    "now-build": "next build",
     "build": "next build && next export",
     "lint": "standard 'bin/*' 'components/**/*.js' 'lib/**/*.js' 'pages/**/*.js'",
     "lint-fix": "standard --fix 'bin/*' 'components/**/*.js' 'lib/**/*.js' 'pages/**/*.js'",
     "precommit": "lint-staged"
   },
   "dependencies": {
-    "firebase": "^5.9.1",
     "html2canvas": "^1.0.0-alpha.12",
     "next": "7.0.0",
     "next-optimized-images": "^2.3.3",
     "ramda": "^0.25.0",
     "react": "^16.8.0",
-    "react-canvas-draw": "^1.0.0",
+    "react-canvas-draw": "^1.0.1-hotfix.4",
     "react-color": "^2.17.0",
     "react-dom": "^16.7.0",
     "react-select": "^2.4.2",
@@ -48,6 +48,5 @@
     "*.js": "standard",
     "*.jsx": "standard",
     "bin/*": "standard"
-  },
-  "license": "ISC"
+  }
 }

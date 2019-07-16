@@ -100,6 +100,12 @@ export const hoverStyles = css`
   }
 `
 
+export const mediaPhoneStyles = css`
+  ${createMaxWithMediaQuery(500)} {
+    display: ${({ phoneDisplay }) => phoneDisplay};
+  }
+`
+
 export const Box = styled.div`
   ${flex}
   ${size}
@@ -122,6 +128,7 @@ export const Box = styled.div`
   ${minHeight}
   ${boxShadow}
   ${borderTop}
+  ${fontWeight}
   ${fontFamily}
   ${lineHeight}
   ${borderLeft}
@@ -130,11 +137,13 @@ export const Box = styled.div`
   ${borderBottom}
   ${borderRadius}
   transform: ${({ transform }) => transform};
+  visibility: ${({ visibility }) => visibility};
   transition: ${({ transition }) => transition};
   border-style: ${({ borderStyle }) => borderStyle};
   text-transform: ${({ textTransform }) => textTransform};
   cursor: ${({ cursor }) => R.or(cursor, 'initial')};
   ${({ additionalStyles }) => additionalStyles};
+  ${mediaPhoneStyles}
 `;
 
 export const Flex = styled(Box)`
@@ -142,7 +151,7 @@ export const Flex = styled(Box)`
   ${alignItems}
   ${flexDirection}
   ${justifyContent}
-  display: ${({ inline }) => H.ifElse(inline, 'inline-flex', 'flex')};
+  display: ${({ display }) => R.or(display, 'flex')};
 `;
 
 export const PositionedBox = styled(Box)`
@@ -229,15 +238,31 @@ export const Label = styled.label`
   }
 `;
 
+export const TextArea = styled.textarea`
+  ${space}
+  ${width}
+  ${color}
+  ${display}
+  ${fontSize}
+  ${alignItems}
+  &.required::after {
+    content: '*';
+    color: red;
+  }
+`;
+
 export const Input = styled.input`
   ${space}
   ${width}
   ${height}
   ${border}
+  ${minWidth}
+  ${maxWidth}
   ${fontSize}
   ${background}
   ${borderRadius}
   cursor: text;
+  box-shadow: 0 0 5px 0 rgba(206, 40, 40, 0.2);
   &:focus {
     box-shadow: 0 0 5px 0 rgba(206, 40, 40, 0.5);
   }

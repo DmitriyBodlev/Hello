@@ -30,8 +30,8 @@ const enhance = compose(
 
 export const CloseIcon = (props) => (
   <PositionedBox
-    top='20px'
-    right='15px'
+    top='10px'
+    right='10px'
     border='none'
     fontSize='20px'
     color='darkred'
@@ -49,7 +49,7 @@ export const ModalComponent = (props) => {
   return (
     <PositionedFlex
       top='0'
-      zIndex='3'
+      zIndex='11'
       width='100vw'
       height='100vh'
       display='flex'
@@ -68,8 +68,8 @@ export const ModalComponent = (props) => {
         transform='translate(-50%, -50%)'
         boxShadow='0 0 8px 1px rgba(0, 0, 0, 0.2)'
       >
-        <CloseIcon closeModal={props.closeModal} />
         {props.children}
+        <CloseIcon closeModal={props.closeModal} />
       </PositionedBox>
     </PositionedFlex>
   );

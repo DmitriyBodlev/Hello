@@ -1,4 +1,5 @@
 import * as R from 'ramda';
+import shortid from 'shortid';
 // constants
 import * as GC from '../constants';
 //  /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -23,21 +24,17 @@ export const ifElse = (predicate, ifSt, elseSt) => {
   return elseSt;
 };
 
+export const genShortId = () => shortid.generate();
+
 export const getLocaleItem = (path, locale) => R.pathOr('', path, locale);
 
 // TODO: remove it if below solution works properly
 // export const isBrowser = new Function('try {return this===window;}catch(e){ return false;}'); // eslint-disable-line
 
-export const isBrowser = typeof window === 'object'
-  && typeof document === 'object'
-  && document.nodeType === 9;
+// export const isBrowser = typeof window === 'object'
+//   && typeof document === 'object'
+//   && document.nodeType === 9;
 
-export const getLocationPathname = () => {
-  if (isBrowser) {
-    return window.location.pathname;
-  }
-  return GC.ROUTE_HOME;
-};
 
 export const shouldReturn = (willExportPDF, content) => {
   if (willExportPDF) {

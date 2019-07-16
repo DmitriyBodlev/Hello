@@ -1,5 +1,5 @@
 import * as R from 'ramda'
-import firebase from 'firebase';
+// import firebase from 'firebase';
 import React, { PureComponent } from 'react'
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -24,17 +24,17 @@ export const withFirebase = BaseComponent =>
       }
     }
     componentWillMount () {
-      let fire = firebase;
-      if (!firebase.apps.length) {
-        fire = firebase.initializeApp(config);
-      }
-      const state = {
-        fire,
-        auth: fire.auth(),
-        db: fire.database(),
-        storage: R.is(Function, fire.storage) && firebase.storage(),
-      }
-      this.setState(state)
+      // let fire = firebase;
+      // if (!firebase.apps.length) {
+      //   fire = firebase.initializeApp(config);
+      // }
+      // const state = {
+      //   fire,
+      //   auth: fire.auth(),
+      //   db: fire.database(),
+      //   storage: R.is(Function, fire.storage) && firebase.storage(),
+      // }
+      // this.setState(state)
     }
     render () {
       const newProps = {

@@ -1,14 +1,20 @@
 import * as R from 'ramda';
 import React, { useState } from 'react';
+// constants
+import * as C from '../../constants';
 // helpers
 import * as H from '../../helpers';
+// select
+import Select from 'react-select';
 // ui
 import {
   Box,
+  Flex,
   Label,
   Input,
   Header,
   Button,
+  TextArea,
   SelectWrapper,
   SelectComponent } from '../../ui';
 // ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -48,7 +54,7 @@ const handleSetImage = (event, imageState, setImageState) => {
   const imageType = /image.*/;
   if (R.not(imageFile)) return;
   if (imageFile.type.match(imageType)) {
-    const reader = new window.FileReader();
+    const reader = new FileReader();
     reader.onload = () => {
       return (
         setImageState({
@@ -68,7 +74,7 @@ export const Dropzone = (props) => (
   <Box
     width='250px'
     m='15px auto'
-    height='400px'
+    height='300px'
     display='flex'
     borderRadius='2px'
     position='relative'
@@ -87,20 +93,13 @@ export const Dropzone = (props) => (
   </Box>
 );
 
-const selectOptions = [
-  { label: '', value: '' },
-  { label: 'Move', value: 'move' },
-  { label: 'Style', value: 'style' },
-  { label: 'With', value: 'with' },
-];
-
 // TODO: with validation
 const ImageForm = props => {
-  let initialState = { icon: null, name: '', type: '', withImageUpdate: false };
+  let initialState = { icon: null, name: '', engName: '', type: [], description: '', withImageUpdate: false };
   if (R.not(R.isNil(props.initialValues))) {
     initialState = R.merge(initialState, props.initialValues)
   }
-  const [ imageState, setImageState ] = useState(initialState)
+  const [ imageState, setImageState ] = useState(initialState);
   return (
     <Box background='#b3a8b8'>
       <Header
@@ -110,41 +109,71 @@ const ImageForm = props => {
         Manage Images
       </Header>
       <Dropzone imageState={imageState} setImageState={setImageState} />
-      <Box
-        display='flex'
+      <Flex
         minHeight='30px'
         alignItems='center'
       >
         <Label
-          color='black'
           width='70px'
-          display='flex'
+          color='black'
+          htmlFor='name'
           fontSize='16px'
           m='5px 0 5px 15px'
         >
-          Назва
+          Назва(укр)
         </Label>
-        <Box
-          display='flex'
+        <Flex
           position='relative'
           alignItems='center'
           justifyContent='baseline'
         >
           <Input
             p='0 10px'
-            width='200px'
+            name='name'
+            width='190px'
             fontSize='16'
             height='30px'
             background='white'
             borderRadius='2px'
-            m='10px 15px 15px'
+            m='0px 15px 15px 25px'
             border='1px solid grey'
             value={imageState.name}
             onChange={(e) => setImageState({ ...imageState, name: e.currentTarget.value })} />
-        </Box>
-      </Box>
-      <Box
-        display='flex'
+        </Flex>
+      </Flex>
+      <Flex
+        minHeight='30px'
+        alignItems='center'
+      >
+        <Label
+          width='70px'
+          color='black'
+          fontSize='16px'
+          htmlFor='engName'
+          m='5px 0 5px 15px'
+        >
+          Назва(eng)
+        </Label>
+        <Flex
+          position='relative'
+          alignItems='center'
+          justifyContent='baseline'
+        >
+          <Input
+            p='0 10px'
+            width='190px'
+            fontSize='16'
+            height='30px'
+            name='engName'
+            background='white'
+            borderRadius='2px'
+            m='0px 15px 15px 25px'
+            border='1px solid grey'
+            value={imageState.engName}
+            onChange={(e) => setImageState({ ...imageState, engName: e.currentTarget.value })} />
+        </Flex>
+      </Flex>
+      <Flex
         minHeight='30px'
         alignItems='center'
         justifyContent='baseline'
@@ -158,29 +187,37 @@ const ImageForm = props => {
         >
           Тип
         </Label>
-        <SelectWrapper position='relative'>
-          <SelectComponent
-            p='0 10px'
-            width='200px'
-            height='30px'
-            lineHeight='30px'
-            background='white'
-            borderRadius='2px'
-            m='10px 15px 15px'
-            position='relative'
-            border='1px solid gray'
-            value={imageState.type}
-            onChange={(e) => setImageState({ ...imageState, type: e.currentTarget.value })}
-          >
-            {selectOptions.map((option, index) => (
-              <option key={index} value={option.value}>{option.label}</option>
-            ))}
-          </SelectComponent>
-        </SelectWrapper>
-      </Box>
-      <Box
+        <Select
+          isMulti={true}
+          value={imageState.type}
+          options={C.selectOptions}
+          onChange={(selectedOption) => setImageState({ ...imageState, type: selectedOption })}
+        />
+      </Flex>
+      <Flex
+        position='relative'
+        alignItems='center'
+        justifyContent='baseline'
+      >
+        {/* </SelectWrapper> */}
+        <Label
+          width='70px'
+          color='black'
+          display='flex'
+          fontSize='16px'
+          m='5px 0 5px 15px'
+          htmlFor='description'
+        >
+          Опис
+        </Label>
+        <TextArea
+          my='20px'
+          name='description'
+          value={imageState.description}
+          onChange={(e) => setImageState({ ...imageState, engName: e.currentTarget.value })} />
+      </Flex>
+      <Flex
         p='10px 20px'
-        display='flex'
         justifyContent='space-between'
       >
         <Button
@@ -210,7 +247,7 @@ const ImageForm = props => {
         >
           Cancel
         </Button>
-      </Box>
+      </Flex>
     </Box>
   );
 };
